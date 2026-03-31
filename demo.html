@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Form Assistant — Voice Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#08080f;--s1:#111118;--s2:#17171f;--s3:#1e1e28;
+  --b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);--b3:rgba(255,255,255,.2);
+  --t1:#e2e2ee;--t2:#8888a4;--t3:#44445a;
+  --purple:#7c6ff7;--p2:#534AB7;--pbg:rgba(124,111,247,.12);
+  --teal:#2dd4a0;--tbg:rgba(45,212,160,.1);
+  --amber:#f0a832;--abg:rgba(240,168,50,.1);
+  --red:#e05555;--rbg:rgba(224,85,85,.1);
+  --r:12px;--rs:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--t1)}
+.scr{display:none;height:100vh;flex-direction:column}
+.scr.on{display:flex}
+
+/* ── Key Screen ── */
+#sk{align-items:center;justify-content:center;padding:24px 20px;background:var(--bg)}
+.kcard{width:100%;max-width:440px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:18px}
+.klogo{display:flex;align-items:center;gap:10px}
+.kbox{width:34px;height:34px;background:var(--p2);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.kbox svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.kh{font-size:20px;font-weight:600;letter-spacing:-.02em}
+.kdesc{font-size:13.5px;color:var(--t2);line-height:1.65}
+.kdesc a{color:var(--purple)}.kdesc strong{color:var(--t1)}
+.klabel{display:block;font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+.kinput{width:100%;background:var(--s2);border:1px solid var(--b2);border-radius:var(--rs);height:44px;padding:0 14px;font-size:14px;color:var(--t1);font-family:'DM Mono',monospace;outline:none;transition:border-color .2s}
+.kinput:focus{border-color:var(--purple)}.kinput.err{border-color:var(--red)}
+.kinput::placeholder{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--t3)}
+.knote{font-size:12px;color:var(--t3);background:var(--s2);border-radius:var(--rs);padding:10px 13px;line-height:1.6}
+.knote strong{color:var(--t2)}
+.kbtn{width:100%;height:44px;border:none;border-radius:var(--rs);font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;background:var(--purple);color:#fff;transition:all .15s}
+.kbtn:hover{background:#6c5fe6}.kbtn:active{transform:scale(.98)}.kbtn:disabled{opacity:.4;cursor:default}
+#kerr{font-size:12px;color:var(--red);display:none;margin-top:-6px}
+
+/* ── Demo Screen ── */
+#sd{flex-direction:column}
+.tbar{height:50px;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0}
+.tbox{width:26px;height:26px;background:var(--p2);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.tbox svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.ttitle{font-size:15px;font-weight:600}.tsub{font-size:11px;color:var(--t3)}
+.tright{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tpill{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--t3);cursor:pointer}
+.tpill:hover{border-color:var(--b2);color:var(--t2)}
+.tdot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0}
+.body{flex:1;display:flex;overflow:hidden;min-height:0}
+
+/* ── Left: Government Form ── */
+.gside{width:420px;flex-shrink:0;border-right:1px solid var(--b1);display:flex;flex-direction:column;overflow:hidden}
+.gbrow{background:#1a3d7c;padding:10px 14px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.emblem{width:28px;height:28px;background:#f5a623;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#7a4200;font-weight:700;flex-shrink:0}
+.gname{font-size:10px;color:#fff;line-height:1.4;font-weight:500}
+.gform{flex:1;overflow-y:auto;padding:16px;background:#f0f2f8}
+.gsec{background:#fff;border-radius:8px;border:1px solid #dde0ec;padding:14px;margin-bottom:12px}
+.gsec-title{font-size:10px;font-weight:600;color:#1a3d7c;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid #e8eaf4}
+.frow{margin-bottom:10px}
+.frow label{display:block;font-size:8.5px;color:#445577;font-weight:500;margin-bottom:3px}
+.frow label .req{color:#cc2222}
+.frow input,.frow select{width:100%;height:26px;border:1px solid #c8cede;border-radius:4px;background:#fafbfd;padding:0 8px;font-size:9.5px;color:#111;font-family:'DM Sans',sans-serif;outline:none;transition:all .25s}
+.frow input:focus,.frow select:focus{border-color:#4a7cf7;background:#eef2ff}
+.frow input.filled{border-color:#2dd4a0 !important;background:#edfaf5 !important;color:#0a5c42 !important;font-weight:500}
+.frow input.active-field{border-color:#7c6ff7 !important;border-width:1.5px !important;background:#f0effe !important;animation:fpulse 1.5s ease-in-out infinite}
+@keyframes fpulse{0%,100%{box-shadow:0 0 0 0 rgba(124,111,247,0)}50%{box-shadow:0 0 0 3px rgba(124,111,247,.2)}}
+.frow select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23667' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+.submit-row{margin-top:4px}
+.gov-submit{width:100%;height:28px;background:#1a3d7c;color:#fff;border:none;border-radius:4px;font-size:10px;font-weight:600;cursor:default;opacity:.45;font-family:'DM Sans',sans-serif}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
+
+/* ── Right: AI Panel ── */
+.aside{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:var(--bg)}
+
+/* Status bar */
+.astat{padding:12px 18px;background:var(--s1);border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:10px;flex-shrink:0}
+.astat-icon{width:8px;height:8px;border-radius:50%;background:var(--t3);transition:background .3s;flex-shrink:0}
+.astat-icon.idle{background:var(--t3)}
+.astat-icon.speaking{background:var(--purple);animation:sblink .8s ease-in-out infinite}
+.astat-icon.listening{background:var(--teal);animation:sblink .5s ease-in-out infinite}
+.astat-icon.filling{background:var(--amber)}
+.astat-icon.done{background:var(--teal)}
+@keyframes sblink{0%,100%{opacity:1}50%{opacity:.3}}
+.astat-text{font-size:12px;font-weight:500;color:var(--t2);flex:1}
+.astat-prog{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace}
+
+/* Current field card */
+.cur-field{padding:14px 18px;border-bottom:1px solid var(--b1);background:var(--s1);flex-shrink:0;display:none}
+.cur-field.show{display:block}
+.cf-label{font-size:10px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.cf-name{font-size:15px;font-weight:600;color:var(--t1);margin-bottom:4px}
+.cf-expl{font-size:12px;color:var(--t2);line-height:1.55}
+
+/* Voice area */
+.voice-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:20px;overflow:hidden}
+.mic-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:100px;height:100px;flex-shrink:0}
+.mic-ring{position:absolute;width:100px;height:100px;border-radius:50%;border:1.5px solid var(--teal);opacity:0;transform:scale(1)}
+.mic-ring.pulse{animation:mring 1.4s ease-out infinite}
+.mic-ring.r2.pulse{animation:mring 1.4s ease-out infinite .5s}
+@keyframes mring{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
+.mic-btn{width:72px;height:72px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;background:var(--s3);position:relative;z-index:1;flex-shrink:0}
+.mic-btn.listening{background:var(--teal)}
+.mic-btn.speaking{background:var(--p2);cursor:default}
+.mic-btn.disabled{opacity:.3;cursor:default}
+.mic-btn svg{width:26px;height:26px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s}
+.transcript{min-height:40px;max-width:320px;text-align:center;font-size:14px;color:var(--t1);line-height:1.55;font-style:italic;transition:all .3s}
+.transcript.interim{color:var(--t2)}
+.transcript.empty{color:var(--t3);font-size:12px;font-style:normal}
+
+/* Waveform (shown while AI speaks) */
+.wave{display:flex;align-items:center;gap:3px;height:32px}
+.wb{width:3px;border-radius:2px;background:var(--purple);transition:height .15s}
+.wb.on{animation:wbanim .6s ease-in-out infinite alternate}
+.wb:nth-child(1){height:6px;animation-delay:.00s}
+.wb:nth-child(2){height:14px;animation-delay:.08s}
+.wb:nth-child(3){height:20px;animation-delay:.04s}
+.wb:nth-child(4){height:10px;animation-delay:.12s}
+.wb:nth-child(5){height:18px;animation-delay:.06s}
+.wb:nth-child(6){height:8px;animation-delay:.10s}
+.wb:nth-child(7){height:16px;animation-delay:.02s}
+@keyframes wbanim{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
+
+/* Text fallback input */
+.txt-fallback{display:none;flex-direction:column;gap:8px;width:100%;max-width:340px}
+.txt-fallback.show{display:flex}
+.tfin{background:var(--s2);border:1px solid var(--b2);border-radius:var(--rs);height:40px;padding:0 12px;font-size:13px;color:var(--t1);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;width:100%}
+.tfin:focus{border-color:var(--purple)}
+.tfbtn{height:36px;background:var(--purple);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;padding:0 16px}
+.tfbtn:hover{background:#6c5fe6}
+
+/* Fill log */
+.log{flex:1;overflow-y:auto;max-height:180px;border-top:1px solid var(--b1);padding:10px 18px;display:flex;flex-direction:column;gap:4px}
+.log-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:.5px solid var(--b1);font-size:11.5px}
+.log-item:last-child{border-bottom:none}
+.li-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.li-dot.filled{background:var(--teal)}.li-dot.skipped{background:var(--t3)}.li-dot.active{background:var(--purple)}
+.li-label{color:var(--t2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-val{color:var(--t1);font-family:'DM Mono',monospace;font-size:10.5px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li-badge{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;flex-shrink:0}
+.lbf{background:var(--tbg);color:var(--teal)}.lbs{background:var(--s3);color:var(--t3)}
+
+/* Action buttons */
+.actions{padding:14px 18px;border-top:1px solid var(--b1);display:flex;gap:8px;flex-shrink:0}
+.abtn{flex:1;height:40px;border:none;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s}
+.abtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.abtn-primary{background:var(--purple);color:#fff}.abtn-primary:hover{background:#6c5fe6}
+.abtn-sec{background:var(--s2);color:var(--t2);border:1px solid var(--b2)}.abtn-sec:hover{background:var(--s3);color:var(--t1)}
+.abtn:disabled{opacity:.35;cursor:default}
+
+@media(max-width:760px){.body{flex-direction:column}.gside{width:100%;max-height:45vh;border-right:none;border-bottom:1px solid var(--b1)}}
+</style>
+</head>
+<body>
+
+<!-- ══ Screen 1: API Key ══ -->
+<div class="scr on" id="sk">
+  <div class="kcard">
+    <div class="klogo">
+      <div class="kbox"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2.5 1.5"/></svg></div>
+      <span class="kh">Form Assistant</span>
+    </div>
+    <p class="kdesc">
+      Enter your <strong>Claude API key</strong>. The AI will read your screen, explain each field out loud, and fill the form as you speak your answers.<br/><br/>
+      Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+    </p>
+    <div>
+      <label class="klabel">Claude API key</label>
+      <input class="kinput" id="kin" type="password" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
+    </div>
+    <div class="knote"><strong>Private:</strong> Your key stays in this browser tab — never logged or sent anywhere except Anthropic's API directly.</div>
+    <button class="kbtn" id="kbtn" onclick="goDemo()">Continue →</button>
+    <div id="kerr">Please enter a valid Claude API key (starts with sk-ant)</div>
+  </div>
+</div>
+
+<!-- ══ Screen 2: Demo ══ -->
+<div class="scr" id="sd">
+  <div class="tbar">
+    <div class="tbox"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2.5 1.5"/></svg></div>
+    <div><div class="ttitle">Form Assistant</div><div class="tsub">Voice-driven · real Claude Vision</div></div>
+    <div class="tright">
+      <div class="tpill" onclick="goKey()"><div class="tdot"></div><span id="kshow">key</span><span style="opacity:.5"> · change</span></div>
+    </div>
+  </div>
+
+  <div class="body">
+
+    <!-- Left: Government Form -->
+    <div class="gside">
+      <div class="gbrow">
+        <div class="emblem">🇮🇳</div>
+        <div class="gname">Maharashtra Government Portal<br/>New Ration Card Application</div>
+      </div>
+      <div class="gform" id="gform">
+        <div class="gsec">
+          <div class="gsec-title">Personal Details</div>
+          <div class="frow"><label>Applicant Name <span class="req">*</span></label><input type="text" id="f-name" data-field="applicant name" placeholder="Full name as per Aadhaar"/></div>
+          <div class="frow"><label>Father's Name <span class="req">*</span></label><input type="text" id="f-fname" data-field="father's name" placeholder=""/></div>
+          <div class="frow"><label>Mother's Name</label><input type="text" id="f-mname" data-field="mother's name" placeholder=""/></div>
+          <div class="frow"><label>Date of Birth <span class="req">*</span></label><input type="text" id="f-dob" data-field="date of birth" placeholder="DD/MM/YYYY"/></div>
+          <div class="frow"><label>Gender <span class="req">*</span></label>
+            <select id="f-gender" data-field="gender">
+              <option value="">Select</option><option>Male</option><option>Female</option><option>Other</option>
+            </select>
+          </div>
+          <div class="frow"><label>Marital Status</label>
+            <select id="f-marital" data-field="marital status">
+              <option value="">Select</option><option>Single</option><option>Married</option><option>Widowed</option><option>Divorced</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="gsec">
+          <div class="gsec-title">Identity Documents</div>
+          <div class="frow"><label>Aadhaar Number <span class="req">*</span></label><input type="text" id="f-aadhaar" data-field="aadhaar number" placeholder="12-digit number"/></div>
+          <div class="frow"><label>Mobile Number <span class="req">*</span></label><input type="text" id="f-mobile" data-field="mobile number" placeholder="10-digit mobile"/></div>
+          <div class="frow"><label>Email ID</label><input type="text" id="f-email" data-field="email id" placeholder=""/></div>
+          <div class="frow"><label>Caste Category <span class="req">*</span></label>
+            <select id="f-caste" data-field="caste category">
+              <option value="">Select</option><option>General</option><option>OBC</option><option>SC</option><option>ST</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="gsec">
+          <div class="gsec-title">Address</div>
+          <div class="frow"><label>House / Flat No <span class="req">*</span></label><input type="text" id="f-addr1" data-field="house number" placeholder=""/></div>
+          <div class="frow"><label>Street / Locality</label><input type="text" id="f-addr2" data-field="locality" placeholder=""/></div>
+          <div class="frow"><label>Taluka <span class="req">*</span></label><input type="text" id="f-taluka" data-field="taluka" placeholder=""/></div>
+          <div class="frow"><label>District <span class="req">*</span></label><input type="text" id="f-dist" data-field="district" placeholder=""/></div>
+          <div class="frow"><label>State <span class="req">*</span></label>
+            <select id="f-state" data-field="state">
+              <option value="">Select</option><option>Maharashtra</option><option>Gujarat</option><option>Karnataka</option><option>Delhi</option><option>Tamil Nadu</option><option>Uttar Pradesh</option><option>Other</option>
+            </select>
+          </div>
+          <div class="frow"><label>Pincode <span class="req">*</span></label><input type="text" id="f-pin" data-field="pincode" placeholder="6-digit pincode"/></div>
+        </div>
+
+        <div class="gsec">
+          <div class="gsec-title">Income &amp; Bank Details</div>
+          <div class="frow"><label>Annual Income (₹) <span class="req">*</span></label><input type="text" id="f-income" data-field="annual income" placeholder=""/></div>
+          <div class="frow"><label>Occupation</label><input type="text" id="f-occ" data-field="occupation" placeholder=""/></div>
+          <div class="frow"><label>Bank Name</label><input type="text" id="f-bank" data-field="bank name" placeholder=""/></div>
+          <div class="frow"><label>IFSC Code</label><input type="text" id="f-ifsc" data-field="ifsc code" placeholder="e.g. SBIN0001234"/></div>
+          <div class="frow"><label>Account Number</label><input type="text" id="f-acc" data-field="account number" placeholder=""/></div>
+        </div>
+
+        <div class="gsec">
+          <div class="submit-row">
+            <button class="gov-submit" disabled>Submit Application</button>
+            <div style="font-size:8px;color:#8a9;text-align:center;margin-top:4px">Submit button is disabled — citizen submits manually</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: AI Panel -->
+    <div class="aside">
+
+      <!-- Status bar -->
+      <div class="astat">
+        <div class="astat-icon idle" id="statdot"></div>
+        <div class="astat-text" id="stattext">Ready — click "Share Screen" to begin</div>
+        <div class="astat-prog" id="statprog"></div>
+      </div>
+
+      <!-- Current field card -->
+      <div class="cur-field" id="curfield">
+        <div class="cf-label">Now filling</div>
+        <div class="cf-name" id="cf-name">—</div>
+        <div class="cf-expl" id="cf-expl"></div>
+      </div>
+
+      <!-- Voice area -->
+      <div class="voice-area">
+        <!-- Waveform (speaking state) -->
+        <div class="wave" id="wave">
+          <div class="wb" id="wb1"></div><div class="wb" id="wb2"></div><div class="wb" id="wb3"></div>
+          <div class="wb" id="wb4"></div><div class="wb" id="wb5"></div><div class="wb" id="wb6"></div>
+          <div class="wb" id="wb7"></div>
+        </div>
+
+        <!-- Mic button -->
+        <div class="mic-wrap">
+          <div class="mic-ring" id="mr1"></div>
+          <div class="mic-ring r2" id="mr2"></div>
+          <button class="mic-btn disabled" id="micbtn" onclick="manualListen()">
+            <svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+          </button>
+        </div>
+
+        <!-- Transcript -->
+        <div class="transcript empty" id="transcript">Waiting to start...</div>
+
+        <!-- Text fallback -->
+        <div class="txt-fallback" id="txtfb">
+          <div style="font-size:11px;color:var(--t3);text-align:center">Voice not available in this browser — type your answer:</div>
+          <input class="tfin" id="tfin" placeholder="Type your answer..." onkeydown="if(event.key==='Enter') submitText()"/>
+          <button class="tfbtn" onclick="submitText()">Submit →</button>
+        </div>
+      </div>
+
+      <!-- Fill log -->
+      <div class="log" id="filllog"></div>
+
+      <!-- Action buttons -->
+      <div class="actions">
+        <button class="abtn abtn-primary" id="startbtn" onclick="startSession()">
+          <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
+          Share Screen &amp; Start
+        </button>
+        <button class="abtn abtn-sec" id="stopbtn" onclick="stopSession()" disabled>
+          <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          Stop
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ── Globals ───────────────────────────────────────────────────────────────────
+let KEY = '';
+let fields = [];
+let curIdx = 0;
+let sessionActive = false;
+let textResolve = null;  // for text fallback
+
+const SIMPLE_FIELDS = ['name','first name','last name','full name','applicant name','head of family',
+  'father','mother','age','date of birth','dob','birth date','gender','sex',
+  'marital status','mobile','phone','email','address','house','flat','door',
+  'locality','street','city','town','district','state','pincode','pin code',
+  'nationality','country','occupation','annual income','income'];
+
+// ── Key screen ────────────────────────────────────────────────────────────────
+function goDemo(){
+  const v = document.getElementById('kin').value.trim();
+  const err = document.getElementById('kerr');
+  err.style.display = 'none';
+  document.getElementById('kin').classList.remove('err');
+  if(!v || !v.startsWith('sk-ant')){
+    document.getElementById('kin').classList.add('err');
+    err.style.display = 'block';
+    return;
+  }
+  KEY = v;
+  document.getElementById('kshow').textContent = v.slice(0,14)+'...';
+  show('sd');
+}
+document.getElementById('kin').addEventListener('keydown', e => {
+  document.getElementById('kin').classList.remove('err');
+  document.getElementById('kerr').style.display = 'none';
+  if(e.key === 'Enter') goDemo();
+});
+function goKey(){ stopSession(); show('sk'); }
+function show(id){ document.querySelectorAll('.scr').forEach(s=>s.classList.remove('on')); document.getElementById(id).classList.add('on'); }
+
+// ── TTS ───────────────────────────────────────────────────────────────────────
+let voicesLoaded = false;
+let preferredVoice = null;
+
+function loadVoices(){
+  return new Promise(res => {
+    const v = window.speechSynthesis.getVoices();
+    if(v.length){ pickVoice(v); res(); return; }
+    window.speechSynthesis.onvoiceschanged = () => { pickVoice(window.speechSynthesis.getVoices()); res(); };
+    setTimeout(res, 1500); // fallback
+  });
+}
+
+function pickVoice(voices){
+  preferredVoice =
+    voices.find(v => v.lang === 'en-IN') ||
+    voices.find(v => v.lang === 'en-GB') ||
+    voices.find(v => v.lang === 'en-AU') ||
+    voices.find(v => v.lang.startsWith('en') && !v.localService) ||
+    voices.find(v => v.lang.startsWith('en')) || null;
+}
+
+function speak(text){
+  return new Promise(resolve => {
+    if(!window.speechSynthesis){ resolve(); return; }
+    window.speechSynthesis.cancel();
+    setWave(true);
+    const utt = new SpeechSynthesisUtterance(text);
+    if(preferredVoice) utt.voice = preferredVoice;
+    utt.lang = 'en-IN';
+    utt.rate = 0.88;
+    utt.pitch = 1.05;
+    utt.volume = 1.0;
+    utt.onend = () => { setWave(false); resolve(); };
+    utt.onerror = () => { setWave(false); resolve(); };
+    window.speechSynthesis.speak(utt);
+    // Chrome 15s bug workaround
+    const interval = setInterval(() => {
+      if(!sessionActive){ clearInterval(interval); return; }
+      window.speechSynthesis.pause();
+      window.speechSynthesis.resume();
+    }, 12000);
+    utt.onend = () => { clearInterval(interval); setWave(false); resolve(); };
+  });
+}
+
+// ── STT ───────────────────────────────────────────────────────────────────────
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const hasSR = !!SR;
+
+function listen(){
+  return new Promise((resolve, reject) => {
+    if(!hasSR){ reject(new Error('no-sr')); return; }
+    setMic('listening');
+    setTranscript('Listening...', false);
+
+    const rec = new SR();
+    rec.lang = 'en-IN';
+    rec.continuous = false;
+    rec.interimResults = true;
+    rec.maxAlternatives = 1;
+
+    let final = '';
+    let ended = false;
+
+    rec.onresult = e => {
+      const r = e.results[e.results.length-1];
+      const t = r[0].transcript;
+      if(r.isFinal){ final = t.trim(); setTranscript(t, false); }
+      else setTranscript(t, true);
+    };
+    rec.onend = () => {
+      if(ended) return; ended = true;
+      setMic('idle');
+      if(final) resolve(final);
+      else reject(new Error('no-speech'));
+    };
+    rec.onerror = e => {
+      if(ended) return; ended = true;
+      setMic('idle');
+      reject(new Error(e.error));
+    };
+    rec.start();
+  });
+}
+
+// Text fallback for non-SR browsers
+function listenTextFallback(){
+  return new Promise(resolve => {
+    const fb = document.getElementById('txtfb');
+    fb.classList.add('show');
+    const inp = document.getElementById('tfin');
+    inp.value = '';
+    inp.focus();
+    textResolve = val => {
+      fb.classList.remove('show');
+      setTranscript(val, false);
+      resolve(val);
+    };
+  });
+}
+function submitText(){
+  const v = document.getElementById('tfin').value.trim();
+  if(!v || !textResolve) return;
+  textResolve(v);
+  textResolve = null;
+}
+function manualListen(){
+  // Allow user to re-trigger listening if needed (edge cases)
+}
+
+async function listenWithFallback(){
+  if(hasSR){
+    try{ return await listen(); }
+    catch(e){
+      if(e.message === 'no-sr'){ return listenTextFallback(); }
+      if(e.message === 'no-speech'){ return null; }
+      throw e;
+    }
+  } else {
+    return listenTextFallback();
+  }
+}
+
+// ── Screen capture ────────────────────────────────────────────────────────────
+async function captureScreen(){
+  if(!navigator.mediaDevices?.getDisplayMedia){
+    throw new Error('Screen capture not supported in this browser.\n\nUse Chrome or Edge and run via:\n  npx serve .\nthen open http://localhost:3000/demo.html');
+  }
+  setStat('capturing', 'Waiting for screen share permission...');
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getDisplayMedia({
+      video: { width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:1} },
+      audio: false
+    });
+  } catch(e) {
+    if(e.name === 'NotAllowedError') throw new Error('Screen share cancelled. Please click "Share Screen & Start" and allow screen sharing.');
+    throw new Error('Screen capture failed: ' + e.message);
+  }
+
+  // Grab one frame
+  const video = document.createElement('video');
+  video.srcObject = stream;
+  video.muted = true;
+  await new Promise(res => { video.onloadedmetadata = res; setTimeout(res, 2000); });
+  await video.play().catch(()=>{});
+  await delay(600);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth || 1280;
+  canvas.height = video.videoHeight || 720;
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  stream.getTracks().forEach(t => t.stop());
+  video.srcObject = null;
+
+  return canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
+}
+
+// ── Claude Vision API ─────────────────────────────────────────────────────────
+async function analyzeForm(b64){
+  setStat('capturing', 'Sending to Claude Vision...');
+
+  const SYSTEM = `You are an expert at reading Indian government web portal forms from screenshots.
+Return ONLY valid JSON — no markdown, no explanation, nothing else.
+
+Analyze every visible form field. For each field return:
+- label: the field label as shown (translate Hindi to English)
+- type: "text"|"number"|"date"|"dropdown"|"radio"|"checkbox"|"file_upload"|"otp"|"captcha"|"submit_button"|"unknown"
+- isRequired: boolean
+- needsSkip: boolean — true ONLY for OTP, CAPTCHA, file uploads, submit buttons. NEVER true for regular fields.
+- explanation: For fields NOT obvious to a common Indian citizen (IFSC code, Aadhaar, PAN, Taluka, survey number, khata number, BPL category, CIN, DIN, etc.) write 1-2 clear sentences in simple English explaining what it is and where to find it. For self-explanatory fields (name, age, date of birth, gender, mobile number, email, address, district, state, pincode, income, occupation) set to null.
+- askPrompt: A short natural voice prompt, e.g. "Please tell me your mobile number." or "What is your annual income?"
+
+Return shape:
+{
+  "formType": string,
+  "portalName": string or null,
+  "fields": [{ "label": string, "type": string, "isRequired": boolean, "needsSkip": boolean, "explanation": string or null, "askPrompt": string }]
+}`;
+
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), 45000);
+
+  let res;
+  try {
+    res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      signal: ctrl.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-iab': 'true',
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 2048,
+        system: SYSTEM,
+        messages: [{
+          role: 'user',
+          content: [
+            { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:b64 }},
+            { type:'text', text:'Analyze this government form screenshot and return the JSON.' }
+          ]
+        }]
+      })
+    });
+  } catch(e) {
+    clearTimeout(timer);
+    if(e.name === 'AbortError') throw new Error('Claude API timed out. Check your internet connection and try again.');
+    throw new Error('Network error: ' + e.message + '\n\nIf you see "Failed to fetch", run the demo via:\n  npx serve .\nthen open http://localhost:3000/demo.html');
+  }
+  clearTimeout(timer);
+
+  if(!res.ok){
+    let msg = res.statusText;
+    try{ const j=await res.json(); msg=j?.error?.message||msg; }catch{}
+    if(res.status===401) throw new Error('Invalid API key. Check at console.anthropic.com');
+    throw new Error('API error '+res.status+': '+msg);
+  }
+
+  const data = await res.json();
+  const block = data.content?.find(b=>b.type==='text');
+  if(!block) throw new Error('Empty response from Claude');
+  const raw = block.text.replace(/^```json\s*/i,'').replace(/```\s*$/i,'').trim();
+  try{ return JSON.parse(raw); }
+  catch{ throw new Error('Could not parse Claude response:\n'+raw.slice(0,300)); }
+}
+
+// ── Form filling ──────────────────────────────────────────────────────────────
+function fillField(label, value){
+  const lc = label.toLowerCase().trim();
+  const inputs = document.querySelectorAll('[data-field]');
+  let best = null, bestScore = 0;
+
+  for(const inp of inputs){
+    const df = inp.dataset.field.toLowerCase();
+    let score = 0;
+    if(df === lc) score = 100;
+    else if(lc.includes(df) || df.includes(lc)) score = 80;
+    else {
+      const lw = lc.split(/\s+/), dw = df.split(/\s+/);
+      const common = lw.filter(w => dw.some(d => d.includes(w) || w.includes(d)));
+      score = (common.length / Math.max(lw.length, dw.length)) * 60;
+    }
+    if(score > bestScore){ bestScore = score; best = inp; }
+  }
+
+  if(best && bestScore > 20){
+    // Remove active highlight from all
+    document.querySelectorAll('.active-field').forEach(e=>e.classList.remove('active-field'));
+    if(best.tagName === 'SELECT'){
+      const opts = Array.from(best.options);
+      const match = opts.find(o=>o.text.toLowerCase().includes(value.toLowerCase())||value.toLowerCase().includes(o.text.toLowerCase()));
+      if(match) best.value = match.value;
+      else best.value = value;
+    } else {
+      best.value = value;
+    }
+    best.classList.add('filled');
+    best.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    return true;
+  }
+  return false;
+}
+
+function highlightField(label){
+  const lc = label.toLowerCase().trim();
+  document.querySelectorAll('.active-field').forEach(e=>e.classList.remove('active-field'));
+  const inputs = document.querySelectorAll('[data-field]');
+  for(const inp of inputs){
+    const df = inp.dataset.field.toLowerCase();
+    if(lc.includes(df)||df.includes(lc)||df===lc){ inp.classList.add('active-field'); inp.scrollIntoView({behavior:'smooth',block:'nearest'}); break; }
+  }
+}
+
+// ── Main session ──────────────────────────────────────────────────────────────
+async function startSession(){
+  if(sessionActive) return;
+  sessionActive = true;
+  document.getElementById('startbtn').disabled = true;
+  document.getElementById('stopbtn').disabled = false;
+  document.getElementById('filllog').innerHTML = '';
+  document.querySelectorAll('.filled,.active-field').forEach(e=>{e.classList.remove('filled','active-field');e.value='';});
+
+  await loadVoices();
+
+  try {
+    // 1. Capture screen
+    const b64 = await captureScreen();
+
+    // 2. Analyze
+    setStat('capturing', 'Claude Vision reading the form...');
+    const result = await analyzeForm(b64);
+    fields = result.fields || [];
+
+    const fillable = fields.filter(f=>!f.needsSkip).length;
+    const skip = fields.filter(f=>f.needsSkip).length;
+
+    setStat('speaking', `Form analyzed · ${fillable} fields to fill`, `0 / ${fillable}`);
+    await speak(`I can see the ${result.formType || 'government form'}. I found ${fillable} fields to fill. Let me go through them one by one.`);
+
+    // 3. Voice loop
+    let filled = 0;
+    const fillable_total = fillable;
+
+    for(let i = 0; i < fields.length; i++){
+      if(!sessionActive) break;
+      const f = fields[i];
+      curIdx = i;
+
+      if(f.needsSkip){
+        await speak(`I'm skipping the ${f.label} field — you'll handle that yourself.`);
+        addLog('skipped', f.label, null);
+        continue;
+      }
+
+      // Show current field
+      showCurField(f);
+      highlightField(f.label);
+      setStat('speaking', `Asking about: ${f.label}`, `${filled} / ${fillable_total}`);
+
+      // Build speech
+      let speech = '';
+      if(f.explanation){
+        speech = `${f.label}. ${f.explanation} ${f.askPrompt || 'Please tell me your ' + f.label + '.'}`;
+      } else {
+        speech = f.askPrompt || `Please tell me your ${f.label}.`;
+      }
+
+      await speak(speech);
+      if(!sessionActive) break;
+
+      // Listen
+      setStat('listening', `Listening for: ${f.label}`, `${filled} / ${fillable_total}`);
+      setMic('listening');
+
+      let value = null;
+      let attempts = 0;
+
+      while(attempts < 2 && !value && sessionActive){
+        try {
+          value = await listenWithFallback();
+          if(!value || value.trim().length === 0){ value = null; throw new Error('empty'); }
+        } catch(e) {
+          attempts++;
+          if(attempts < 2 && sessionActive){
+            await speak(`I didn't catch that. Please say your ${f.label} again.`);
+          }
+        }
+      }
+
+      if(!sessionActive) break;
+
+      if(!value){
+        await speak(`I'll skip ${f.label} for now. You can fill it manually.`);
+        addLog('skipped', f.label, null);
+        continue;
+      }
+
+      // Confirm + fill
+      setStat('filling', `Filling: ${f.label}`, `${filled} / ${fillable_total}`);
+      setTranscript(value, false);
+
+      const shortVal = value.length > 30 ? value.slice(0,30)+'...' : value;
+      await speak(`Got it. ${shortVal}. Filling it now.`);
+
+      fillField(f.label, value);
+      addLog('filled', f.label, value);
+      filled++;
+      setStat('filling', `Filled: ${f.label}`, `${filled} / ${fillable_total}`);
+      await delay(500);
+    }
+
+    if(sessionActive){
+      hideCurField();
+      document.querySelectorAll('.active-field').forEach(e=>e.classList.remove('active-field'));
+      setStat('done', `Done · ${filled} fields filled`);
+      setMic('idle');
+      await speak(`All done. I've filled ${filled} out of ${fillable_total} fields. Please review the form carefully, then submit it yourself when you are ready. I did not and will not touch the submit button.`);
+    }
+
+  } catch(e) {
+    if(sessionActive){
+      setStat('idle', 'Error — see below');
+      setMic('idle');
+      setTranscript('Error: ' + e.message, false);
+      console.error(e);
+      try { await speak('Something went wrong. ' + e.message.split('\n')[0]); } catch{}
+    }
+  }
+
+  sessionActive = false;
+  document.getElementById('startbtn').disabled = false;
+  document.getElementById('stopbtn').disabled = true;
+  hideCurField();
+  setMic('idle');
+}
+
+function stopSession(){
+  sessionActive = false;
+  window.speechSynthesis.cancel();
+  if(textResolve){ textResolve(''); textResolve = null; }
+  document.getElementById('txtfb').classList.remove('show');
+  setStat('idle', 'Stopped — click "Share Screen" to restart');
+  setMic('idle');
+  setWave(false);
+  document.getElementById('startbtn').disabled = false;
+  document.getElementById('stopbtn').disabled = true;
+  hideCurField();
+}
+
+// ── UI helpers ────────────────────────────────────────────────────────────────
+function setStat(state, text, prog=''){
+  const dot = document.getElementById('statdot');
+  const txt = document.getElementById('stattext');
+  const pr  = document.getElementById('statprog');
+  dot.className = 'astat-icon ' + state;
+  txt.textContent = text;
+  pr.textContent = prog;
+}
+
+function showCurField(f){
+  const el = document.getElementById('curfield');
+  document.getElementById('cf-name').textContent = f.label;
+  document.getElementById('cf-expl').textContent = f.explanation || '';
+  el.classList.add('show');
+}
+function hideCurField(){ document.getElementById('curfield').classList.remove('show'); }
+
+function setMic(state){
+  const btn = document.getElementById('micbtn');
+  const r1  = document.getElementById('mr1');
+  const r2  = document.getElementById('mr2');
+  btn.className = 'mic-btn ' + (state === 'idle' ? 'disabled' : state);
+  r1.classList.toggle('pulse', state === 'listening');
+  r2.classList.toggle('pulse', state === 'listening');
+  document.getElementById('transcript').classList.toggle('empty', state === 'idle');
+  if(state === 'idle' && !document.getElementById('transcript').textContent.trim()){
+    document.getElementById('transcript').textContent = 'Waiting...';
+  }
+}
+
+function setWave(on){
+  document.querySelectorAll('.wb').forEach(b => b.classList.toggle('on', on));
+}
+
+function setTranscript(text, interim){
+  const el = document.getElementById('transcript');
+  el.textContent = text;
+  el.className = 'transcript' + (interim ? ' interim' : '');
+}
+
+function addLog(type, label, value){
+  const log = document.getElementById('filllog');
+  const item = document.createElement('div');
+  item.className = 'log-item';
+  const disp = value ? maskValue(label, value) : '—';
+  const badge = type === 'filled' ? '<span class="li-badge lbf">filled</span>' : '<span class="li-badge lbs">skipped</span>';
+  item.innerHTML = `<div class="li-dot ${type === 'filled' ? 'filled' : 'skipped'}"></div><div class="li-label">${label}</div><div class="li-val">${disp}</div>${badge}`;
+  log.appendChild(item);
+  log.scrollTop = log.scrollHeight;
+}
+
+function maskValue(label, val){
+  const l = label.toLowerCase();
+  if(l.includes('aadhaar')||l.includes('aadhar')) return 'XXXX XXXX '+String(val).replace(/\s/g,'').slice(-4);
+  if(l.includes('pan')) return String(val).slice(0,5)+'XXXX'+String(val).slice(-1);
+  if(l.includes('account')) return 'XXXX'+String(val).slice(-4);
+  if(l.includes('password')||l.includes('otp')) return '••••••';
+  return String(val);
+}
+
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+</script>
+</body>
+</html>
