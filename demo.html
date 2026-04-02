@@ -3,17 +3,17 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Form Assistant — Live Demo</title>
+<title>Form Assistant — AI Demo</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 :root{
   --bg:#08080f;--s1:#111118;--s2:#17171f;--s3:#1e1e28;
-  --b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.14);
   --t1:#e2e2ee;--t2:#8888a4;--t3:#44445a;
   --purple:#7c6ff7;--p2:#534AB7;--pbg:rgba(124,111,247,.12);
   --teal:#2dd4a0;--tbg:rgba(45,212,160,.1);
-  --amber:#f0a832;--abg:rgba(240,168,50,.1);
-  --red:#e05555;--r:12px;--rs:8px;
+  --amber:#f0a832;--red:#e05555;
+  --r:12px;--rs:8px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--t1)}
@@ -48,51 +48,49 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .tbox svg{width:12px;height:12px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
 .ttitle{font-size:15px;font-weight:600}.tsub{font-size:11px;color:var(--t3)}
 .tright{margin-left:auto;display:flex;align-items:center;gap:8px}
-.tpill{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--t3);cursor:pointer;white-space:nowrap}
+.tpill{display:flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--b1);border-radius:20px;padding:5px 12px;font-size:11px;color:var(--t3);cursor:pointer}
 .tpill:hover{border-color:var(--b2);color:var(--t2)}
 .tdot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0}
 .body{flex:1;display:flex;overflow:hidden;min-height:0}
 
-/* ── Left: screen share panel ── */
-.left{width:420px;flex-shrink:0;border-right:1px solid var(--b1);display:flex;flex-direction:column;background:var(--s1);overflow:hidden}
-.lphead{padding:12px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px;flex-shrink:0}
+/* ── Left: preview ── */
+.left{width:400px;flex-shrink:0;border-right:1px solid var(--b1);display:flex;flex-direction:column;background:var(--s1)}
+.lphead{padding:12px 16px;border-bottom:1px solid var(--b1);display:flex;align-items:center;gap:8px}
 .lph-title{font-size:13px;font-weight:600;flex:1}
-.lph-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
-.badge-idle{background:var(--s3);color:var(--t3)}
-.badge-live{background:var(--tbg);color:var(--teal)}
-.badge-analyzing{background:var(--pbg);color:var(--purple);animation:badgepulse 1s ease-in-out infinite}
-@keyframes badgepulse{0%,100%{opacity:1}50%{opacity:.5}}
+.lbadge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.b-idle{background:var(--s3);color:var(--t3)}
+.b-live{background:var(--tbg);color:var(--teal)}
+.b-reading{background:var(--pbg);color:var(--purple);animation:bp 1s ease-in-out infinite}
+@keyframes bp{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* Screen preview */
-.screenprev{flex:1;display:flex;align-items:center;justify-content:center;background:var(--bg);overflow:hidden;position:relative}
-.prev-idle{display:flex;flex-direction:column;align-items:center;gap:10px;color:var(--t3);text-align:center;padding:24px}
+.prev{flex:1;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+.prev-idle{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:24px;color:var(--t3)}
 .prev-idle svg{opacity:.2}
-.prev-idle p{font-size:12px;line-height:1.6;max-width:220px}
+.prev-idle p{font-size:12px;line-height:1.65;max-width:220px}
 .prev-img{width:100%;height:100%;object-fit:contain;display:none}
 .prev-img.show{display:block}
 
-/* Analysis overlay on screenshot */
-.analysis-overlay{position:absolute;inset:0;background:rgba(8,8,15,.82);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
-.analysis-overlay.show{display:flex}
-.ao-spin{width:36px;height:36px;border:2px solid var(--s3);border-top-color:var(--purple);border-radius:50%;animation:spin .9s linear infinite}
+.anl-overlay{position:absolute;inset:0;background:rgba(8,8,15,.85);display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.anl-overlay.show{display:flex}
+.spin{width:36px;height:36px;border:2px solid var(--s3);border-top-color:var(--purple);border-radius:50%;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.ao-title{font-size:13px;color:var(--t2);font-weight:500}
-.ao-sub{font-size:11px;color:var(--t3)}
-.ao-step{font-size:11px;color:var(--purple);font-family:'DM Mono',monospace}
+.anl-title{font-size:13px;color:var(--t2);font-weight:500}
+.anl-step{font-size:11px;color:var(--purple);font-family:'DM Mono',monospace}
 
-/* Field chips (detected fields shown after analysis) */
-.field-chips{padding:10px 14px;border-top:1px solid var(--b1);display:none;flex-wrap:wrap;gap:5px;flex-shrink:0;max-height:80px;overflow-y:auto}
+.field-chips{padding:8px 12px;border-top:1px solid var(--b1);display:none;flex-wrap:wrap;gap:4px;max-height:72px;overflow-y:auto;flex-shrink:0}
 .field-chips.show{display:flex}
-.chip{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--s2);border:1px solid var(--b1);color:var(--t2)}
-.chip.filled{background:var(--tbg);border-color:var(--teal);color:var(--teal)}
-.chip.active{background:var(--pbg);border-color:var(--purple);color:var(--purple)}
+.chip{font-size:10px;padding:2px 8px;border-radius:10px;background:var(--s2);border:1px solid var(--b1);color:var(--t2);transition:all .2s}
+.chip.act{background:var(--pbg);border-color:var(--purple);color:var(--purple)}
+.chip.done{background:var(--tbg);border-color:var(--teal);color:var(--teal)}
 
-/* Share button */
-.lfoot{padding:12px 16px;border-top:1px solid var(--b1);flex-shrink:0}
-.sharebtn{width:100%;height:40px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--rs);font-size:13px;font-weight:600;color:var(--t2);cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .15s}
-.sharebtn:hover{background:var(--s3);color:var(--t1);border-color:var(--b2)}
-.sharebtn.active-share{background:var(--pbg);border-color:var(--purple);color:var(--purple)}
-.sharebtn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.lfoot{padding:12px 16px;border-top:1px solid var(--b1);display:flex;gap:8px;flex-shrink:0}
+.openbtn{flex:1;height:38px;background:var(--s2);border:1px solid var(--b2);border-radius:var(--rs);font-size:12px;font-weight:600;color:var(--t2);cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s}
+.openbtn:hover{background:var(--s3);color:var(--t1)}
+.openbtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
+.openbtn.ready{background:var(--pbg);border-color:var(--purple);color:var(--purple)}
+.sharebtn{flex:1;height:38px;background:var(--purple);border:none;border-radius:var(--rs);font-size:12px;font-weight:600;color:#fff;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s}
+.sharebtn:hover{background:#6c5fe6}.sharebtn:disabled{opacity:.35;cursor:default}
+.sharebtn svg{width:13px;height:13px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
 
 /* ── Right: AI panel ── */
 .right{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;background:var(--bg)}
@@ -101,8 +99,8 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .sdot.idle{background:var(--t3)}.sdot.speaking{background:var(--purple);animation:blink .8s infinite}
 .sdot.listening{background:var(--teal);animation:blink .5s infinite}
 .sdot.filling{background:var(--amber)}.sdot.done{background:var(--teal)}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
-.stext{font-size:12px;font-weight:500;color:var(--t2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.stext{font-size:12px;font-weight:500;color:var(--t2);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sprog{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace;flex-shrink:0}
 
 .curfield{padding:12px 16px;background:var(--s1);border-bottom:1px solid var(--b1);flex-shrink:0;display:none}
@@ -120,7 +118,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .wb:nth-child(5){height:17px;animation-delay:.06s}.wb:nth-child(6){height:7px;animation-delay:.10s}
 .wb:nth-child(7){height:15px;animation-delay:.02s}
 @keyframes wanim{from{transform:scaleY(.3)}to{transform:scaleY(1)}}
-.micwrap{position:relative;width:88px;height:88px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.micwrap{position:relative;width:88px;height:88px;display:flex;align-items:center;justify-content:center}
 .mring{position:absolute;width:88px;height:88px;border-radius:50%;border:1.5px solid var(--teal);opacity:0}
 .mring.p{animation:mring 1.4s ease-out infinite}
 .mring.p2{animation:mring 1.4s ease-out infinite .55s}
@@ -131,6 +129,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .micbtn svg{width:24px;height:24px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .transcript{min-height:36px;max-width:300px;text-align:center;font-size:14px;color:var(--t1);line-height:1.55;font-style:italic}
 .transcript.dim{color:var(--t2)}.transcript.muted{color:var(--t3);font-size:12px;font-style:normal}
+
 .txtfb{display:none;flex-direction:column;gap:8px;width:100%;max-width:300px}
 .txtfb.show{display:flex}
 .tfnote{font-size:11px;color:var(--t3);text-align:center}
@@ -138,6 +137,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .tfin:focus{border-color:var(--purple)}
 .tfbtn{height:36px;background:var(--purple);color:#fff;border:none;border-radius:var(--rs);font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif}
 .tfbtn:hover{background:#6c5fe6}
+
 .log{border-top:1px solid var(--b1);padding:8px 16px;display:flex;flex-direction:column;gap:3px;overflow-y:auto;max-height:150px}
 .li{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:.5px solid var(--b1);font-size:11px}
 .li:last-child{border-bottom:none}
@@ -145,8 +145,9 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .ldot.f{background:var(--teal)}.ldot.s{background:var(--t3)}
 .llbl{color:var(--t2);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .lval{color:var(--t1);font-family:'DM Mono',monospace;font-size:10px;max-width:110px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.lbadge{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;flex-shrink:0}
-.lbf{background:var(--tbg);color:var(--teal)}.lbs{background:var(--s3);color:var(--t3)}
+.lbf{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--tbg);color:var(--teal)}
+.lbs{font-size:9px;font-weight:600;padding:1px 6px;border-radius:4px;background:var(--s3);color:var(--t3)}
+
 .actions{padding:12px 16px;border-top:1px solid var(--b1);display:flex;gap:8px;flex-shrink:0}
 .abtn{flex:1;height:40px;border:none;border-radius:var(--rs);font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s}
 .abtn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round}
@@ -155,12 +156,11 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .abtn:disabled{opacity:.35;cursor:default}
 
 ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:var(--s3);border-radius:2px}
-@media(max-width:800px){.body{flex-direction:column}.left{width:100%;max-height:42vh;border-right:none;border-bottom:1px solid var(--b1)}}
 </style>
 </head>
 <body>
 
-<!-- ── Screen 1: Key ── -->
+<!-- Screen 1: Key -->
 <div class="scr on" id="sk">
   <div class="kcard">
     <div class="klogo">
@@ -168,68 +168,67 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
       <span class="kh">Form Assistant</span>
     </div>
     <p class="kdesc">
-      Enter your <strong>Claude API key</strong>. The AI will share your screen, read the form, explain each field aloud, and fill it as you speak.<br/><br/>
+      Enter your <strong>Claude API key</strong>. The demo will open a real government form in a new tab, read it with AI, and fill the fields as you speak.<br/><br/>
       Get a key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
     </p>
     <div>
       <label class="klbl">Claude API key</label>
       <input class="kinput" id="kin" type="password" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
     </div>
-    <div class="knote">
-      <strong>Private:</strong> Key stays in your browser tab — sent only to Anthropic's API directly.<br/>
-      <strong>Browser note:</strong> Use Chrome for best screen share + voice support.
-    </div>
+    <div class="knote"><strong>Privacy:</strong> Key stays in this browser tab only — sent directly to Anthropic's API, nowhere else.</div>
     <button class="kbtn" onclick="goDemo(false)">Continue →</button>
     <div class="kerr" id="kerr">Please enter a valid key starting with sk-ant</div>
-    <div class="kskip" onclick="goDemo(true)">Skip — run voice demo without AI analysis</div>
+    <div class="kskip" onclick="goDemo(true)">Skip — demo without AI (voice only)</div>
   </div>
 </div>
 
-<!-- ── Screen 2: Demo ── -->
+<!-- Screen 2: Demo -->
 <div class="scr" id="sd">
   <div class="tbar">
     <div class="tbox"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5"/><path d="M8 5v3l2.5 1.5"/></svg></div>
-    <div><div class="ttitle">Form Assistant</div><div class="tsub" id="tsub">Share your screen → AI reads the form → Voice fills it</div></div>
+    <div><div class="ttitle">Form Assistant</div><div class="tsub">AI reads your screen · fills the real form · voice-guided</div></div>
     <div class="tright">
       <div class="tpill" onclick="goKey()"><div class="tdot"></div><span id="kshow">key</span><span style="opacity:.5"> · change</span></div>
     </div>
   </div>
 
   <div class="body">
-
-    <!-- Left: screen share -->
+    <!-- Left: screen preview -->
     <div class="left">
       <div class="lphead">
-        <span class="lph-title">Your screen</span>
-        <span class="lph-badge badge-idle" id="screen-badge">Not shared</span>
+        <span class="lph-title">Government form</span>
+        <span class="lbadge b-idle" id="lbadge">Not opened</span>
       </div>
-      <div class="screenprev" id="screenprev">
+      <div class="prev" id="prev">
         <div class="prev-idle" id="prev-idle">
           <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="7" width="36" height="24" rx="3"/><line x1="14" y1="31" x2="14" y2="37"/><line x1="30" y1="31" x2="30" y2="37"/><line x1="10" y1="37" x2="34" y2="37"/></svg>
-          <p>Press "Share Screen" below, then select the tab or window with your government form.</p>
+          <p>Step 1: Open the government form.<br/>Step 2: Share that tab so AI can read it.</p>
         </div>
-        <img id="prev-img" class="prev-img" alt="Screen capture"/>
-        <div class="analysis-overlay" id="analysis-overlay">
-          <div class="ao-spin"></div>
-          <div class="ao-title">Claude Vision reading the form</div>
-          <div class="ao-sub">claude-sonnet-4 · vision analysis</div>
-          <div class="ao-step" id="ao-step">→ Detecting form fields...</div>
+        <img id="prev-img" class="prev-img" alt=""/>
+        <div class="anl-overlay" id="anl">
+          <div class="spin"></div>
+          <div class="anl-title">Claude Vision reading the form</div>
+          <div class="anl-step" id="anl-step">→ Analyzing fields...</div>
         </div>
       </div>
-      <div class="field-chips" id="field-chips"></div>
+      <div class="field-chips" id="chips"></div>
       <div class="lfoot">
-        <button class="sharebtn" id="sharebtn" onclick="shareScreen()">
+        <button class="openbtn" id="openbtn" onclick="openForm()">
+          <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open form in new tab
+        </button>
+        <button class="sharebtn" id="sharebtn" onclick="shareScreen()" disabled>
           <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><polyline points="8 21 12 17 16 21"/></svg>
-          Share Screen
+          Share screen
         </button>
       </div>
     </div>
 
-    <!-- Right: AI voice panel -->
+    <!-- Right: AI panel -->
     <div class="right">
       <div class="astat">
         <div class="sdot idle" id="sdot"></div>
-        <div class="stext" id="stext">Share your screen to begin</div>
+        <div class="stext" id="stext">Open the form and share the tab to begin</div>
         <div class="sprog" id="sprog"></div>
       </div>
       <div class="curfield" id="curfield">
@@ -251,7 +250,7 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
         </div>
         <div class="transcript muted" id="transcript">Waiting...</div>
         <div class="txtfb" id="txtfb">
-          <div class="tfnote">Mic unavailable — type your answer:</div>
+          <div class="tfnote">Mic not available — type your answer:</div>
           <input class="tfin" id="tfin" placeholder="Type here..." onkeydown="if(event.key==='Enter')typeSubmit()"/>
           <button class="tfbtn" onclick="typeSubmit()">Submit →</button>
         </div>
@@ -272,80 +271,106 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 </div>
 
 <script>
-// ── Default field definitions (fallback when Vision not available) ─────────────
+// ── Field map: matches data-label in form.html to field IDs ──────────────────
+// Used to send precise fill commands to the form tab
+const FIELD_MAP = {
+  'full name':      { id:'f-name',     label:'Full Name' },
+  'applicant name': { id:'f-name',     label:'Full Name' },
+  'name':           { id:'f-name',     label:'Full Name' },
+  'father name':    { id:'f-fname',    label:"Father's Name" },
+  "father's name":  { id:'f-fname',    label:"Father's Name" },
+  'mother name':    { id:'f-mname',    label:"Mother's Name" },
+  "mother's name":  { id:'f-mname',    label:"Mother's Name" },
+  'date of birth':  { id:'f-dob',      label:'Date of Birth' },
+  'dob':            { id:'f-dob',      label:'Date of Birth' },
+  'gender':         { id:'f-gender',   label:'Gender' },
+  'marital status': { id:'f-marital',  label:'Marital Status' },
+  'aadhaar number': { id:'f-aadhaar',  label:'Aadhaar Number' },
+  'aadhaar':        { id:'f-aadhaar',  label:'Aadhaar Number' },
+  'mobile number':  { id:'f-mobile',   label:'Mobile Number' },
+  'mobile':         { id:'f-mobile',   label:'Mobile Number' },
+  'email':          { id:'f-email',    label:'Email' },
+  'email id':       { id:'f-email',    label:'Email' },
+  'caste category': { id:'f-caste',    label:'Caste Category' },
+  'caste':          { id:'f-caste',    label:'Caste Category' },
+  'house number':   { id:'f-house',    label:'House / Flat No.' },
+  'house':          { id:'f-house',    label:'House / Flat No.' },
+  'building name':  { id:'f-building', label:'Building Name' },
+  'locality':       { id:'f-locality', label:'Locality' },
+  'taluka':         { id:'f-taluka',   label:'Taluka' },
+  'district':       { id:'f-district', label:'District' },
+  'state':          { id:'f-state',    label:'State' },
+  'pincode':        { id:'f-pin',      label:'PIN Code' },
+  'pin code':       { id:'f-pin',      label:'PIN Code' },
+  'annual income':  { id:'f-income',   label:'Annual Income' },
+  'income':         { id:'f-income',   label:'Annual Income' },
+  'occupation':     { id:'f-occ',      label:'Occupation' },
+  'ration card type':{ id:'f-rctype',  label:'Ration Card Type' },
+  'bank name':      { id:'f-bank',     label:'Bank Name' },
+  'ifsc code':      { id:'f-ifsc',     label:'IFSC Code' },
+  'ifsc':           { id:'f-ifsc',     label:'IFSC Code' },
+  'account number': { id:'f-acc',      label:'Account Number' },
+};
+
+// Default field definitions (fallback when Vision unavailable)
 const DEFAULT_FIELDS = [
-  { label:'Applicant Name',    expl:null,
-    ask:'What is your full name, as it appears on your Aadhaar card?' },
-  { label:"Father's Name",     expl:null,
-    ask:"What is your father's full name?" },
-  { label:"Mother's Name",     expl:null,
-    ask:"What is your mother's full name?" },
-  { label:'Date of Birth',     expl:null,
-    ask:'What is your date of birth? Say it as day, month, year.' },
-  { label:'Gender',            expl:null,
-    ask:'What is your gender — Male, Female, or Other?' },
-  { label:'Marital Status',    expl:null,
-    ask:'What is your marital status — Single, Married, Widowed, or Divorced?' },
-  { label:'Aadhaar Number',
-    expl:'Your Aadhaar is a 12-digit unique identity number issued by the Government of India. You will find it printed on your Aadhaar card or in the mAadhaar app.',
+  { id:'f-name',     label:'Full Name',          expl:null,           ask:'What is your full name as it appears on your Aadhaar card?' },
+  { id:'f-fname',    label:"Father's Name",       expl:null,           ask:"What is your father's full name?" },
+  { id:'f-mname',    label:"Mother's Name",       expl:null,           ask:"What is your mother's name?" },
+  { id:'f-dob',      label:'Date of Birth',       expl:null,           ask:'What is your date of birth? Please say day, month, year.' },
+  { id:'f-gender',   label:'Gender',              expl:null,           ask:'What is your gender — Male, Female, or Transgender?' },
+  { id:'f-marital',  label:'Marital Status',      expl:null,           ask:'What is your marital status?' },
+  { id:'f-aadhaar',  label:'Aadhaar Number',
+    expl:'Your Aadhaar is a 12-digit number issued by the Government of India. You can find it printed on your Aadhaar card.',
     ask:'Please tell me your 12-digit Aadhaar number.' },
-  { label:'Mobile Number',     expl:null,
-    ask:'What is your 10-digit mobile number?' },
-  { label:'Email ID',          expl:null,
-    ask:'What is your email address? Say skip if you do not have one.' },
-  { label:'Caste Category',
-    expl:'This is your social category — General, OBC meaning Other Backward Class, SC meaning Scheduled Caste, or ST meaning Scheduled Tribe. It determines which government schemes you are eligible for.',
+  { id:'f-mobile',   label:'Mobile Number',       expl:null,           ask:'What is your 10-digit mobile number?' },
+  { id:'f-email',    label:'Email Address',       expl:null,           ask:'What is your email address? Say skip if you don\'t have one.' },
+  { id:'f-caste',    label:'Caste Category',
+    expl:'This is your social category — General, OBC which means Other Backward Class, SC which is Scheduled Caste, or ST which is Scheduled Tribe. It determines eligibility for government subsidies.',
     ask:'What is your caste category — General, OBC, SC, or ST?' },
-  { label:'House or Flat Number', expl:null,
-    ask:'What is your house or flat number?' },
-  { label:'Street or Locality', expl:null,
-    ask:'What is your street name or locality?' },
-  { label:'Taluka',
-    expl:'A Taluka, also called Tehsil, is an administrative area within your district — smaller than a district but larger than a village or town. For example, if you live in Pune city, your Taluka is Haveli.',
+  { id:'f-house',    label:'House Number',        expl:null,           ask:'What is your house or flat number?' },
+  { id:'f-locality', label:'Locality',            expl:null,           ask:'What is your street name or locality?' },
+  { id:'f-taluka',   label:'Taluka',
+    expl:'A Taluka, also called Tehsil, is an administrative area within your district. For example, if you live in Pune city, your Taluka is Haveli.',
     ask:'What is your Taluka?' },
-  { label:'District',          expl:null, ask:'What is your district?' },
-  { label:'State',             expl:null, ask:'Which state do you live in?' },
-  { label:'Pincode',           expl:null, ask:'What is your 6-digit pincode?' },
-  { label:'Annual Income',
-    expl:'This is the total income of your household from all sources in one year — salary, business, farming — in Indian Rupees.',
-    ask:'What is your total annual household income in rupees?' },
-  { label:'Occupation',        expl:null, ask:'What is your occupation?' },
-  { label:'Bank Name',         expl:null,
-    ask:'What is the name of your bank? Say skip if you do not have a bank account.' },
-  { label:'IFSC Code',
-    expl:'The IFSC code is an 11-character code that identifies your specific bank branch. It starts with 4 letters for the bank name, then a zero, then 6 digits for the branch. You will find it printed in your passbook, on a cheque leaf, or in your bank app.',
-    ask:'Please tell me your IFSC code. You can find it in your passbook or cheque book.' },
-  { label:'Account Number',
-    expl:'This is your bank account number, usually between 9 and 18 digits. You will find it in your passbook or bank app.',
+  { id:'f-district', label:'District',            expl:null,           ask:'What district do you live in?' },
+  { id:'f-state',    label:'State',               expl:null,           ask:'Which state?' },
+  { id:'f-pin',      label:'PIN Code',            expl:null,           ask:'What is your 6-digit PIN code?' },
+  { id:'f-income',   label:'Annual Income',
+    expl:'This is the total income of your entire household from all sources in one year, in Indian Rupees.',
+    ask:'What is your total annual household income?' },
+  { id:'f-occ',      label:'Occupation',          expl:null,           ask:'What is your occupation?' },
+  { id:'f-rctype',   label:'Ration Card Type',
+    expl:'APL means Above Poverty Line, BPL means Below Poverty Line, and Antyodaya is for the poorest households. This determines how much subsidy you receive.',
+    ask:'What type of ration card are you applying for — APL, BPL, or Antyodaya?' },
+  { id:'f-bank',     label:'Bank Name',           expl:null,           ask:'What is your bank name? Say skip if you don\'t have one.' },
+  { id:'f-ifsc',     label:'IFSC Code',
+    expl:'The IFSC code is an 11-character code identifying your bank branch. It starts with 4 letters for the bank name, then a zero, then 6 digits. You can find it on your passbook or cheque book.',
+    ask:'Please tell me your IFSC code. You\'ll find it in your passbook.' },
+  { id:'f-acc',      label:'Account Number',
+    expl:'This is your bank account number, usually 9 to 18 digits long. You can find it in your passbook or bank app.',
     ask:'Please tell me your bank account number.' },
 ];
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let KEY = '';
-let useAI = false;
-let running = false;
+// ── State ────────────────────────────────────────────────────────────────────
+let KEY = '', useAI = false, running = false;
+let formTab = null;
 let textResolve = null;
 let preferredVoice = null;
-let activeFields = [];   // populated either from Claude Vision or DEFAULT_FIELDS
-let screenShared = false;
+let activeFields = [];
 let capturedB64 = null;
 
 // ── Key screen ────────────────────────────────────────────────────────────────
 function goDemo(skip) {
-  const inp = document.getElementById('kin');
-  const err = document.getElementById('kerr');
-  err.style.display = 'none';
-  inp.classList.remove('err');
+  const inp = document.getElementById('kin'), err = document.getElementById('kerr');
+  err.style.display = 'none'; inp.classList.remove('err');
   if (!skip) {
     const v = inp.value.trim();
-    if (!v || !v.startsWith('sk-ant')) {
-      inp.classList.add('err'); err.style.display = 'block'; return;
-    }
+    if (!v || !v.startsWith('sk-ant')) { inp.classList.add('err'); err.style.display = 'block'; return; }
     KEY = v; useAI = true;
     document.getElementById('kshow').textContent = v.slice(0,14)+'...';
   } else {
-    useAI = false;
-    document.getElementById('kshow').textContent = 'no key';
+    useAI = false; document.getElementById('kshow').textContent = 'no key';
   }
   show('sd');
 }
@@ -355,151 +380,171 @@ document.getElementById('kin').addEventListener('keydown', e => {
   if (e.key === 'Enter') goDemo(false);
 });
 function goKey() { stopSession(); show('sk'); }
-function show(id) {
-  document.querySelectorAll('.scr').forEach(s => s.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
+function show(id) { document.querySelectorAll('.scr').forEach(s => s.classList.remove('on')); document.getElementById(id).classList.add('on'); }
+
+// ── Open the government form ──────────────────────────────────────────────────
+function openForm() {
+  formTab = window.open('form.html', '_blank');
+  document.getElementById('openbtn').classList.add('ready');
+  document.getElementById('openbtn').innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:13px;height:13px"><polyline points="20 6 9 17 4 12"/></svg> Form opened`;
+  document.getElementById('sharebtn').disabled = false;
+  setStat('idle', 'Form opened — now share that tab');
+  setBadge('b-idle', 'Form open');
 }
 
 // ── Screen capture ────────────────────────────────────────────────────────────
 async function shareScreen() {
   if (!navigator.mediaDevices?.getDisplayMedia) {
-    alert('Screen sharing is not supported in this browser.\n\nPlease use Chrome or Edge.');
+    alert('Screen sharing not supported.\n\nUse Chrome or Edge. Run via:\n  npx serve .\nthen open http://localhost:3000/demo.html');
     return;
   }
-
-  const btn = document.getElementById('sharebtn');
-  btn.disabled = true;
-  setBadge('analyzing', 'Waiting...');
-  setStat('idle', 'Waiting for screen share permission...');
+  const sbtn = document.getElementById('sharebtn');
+  sbtn.disabled = true;
+  setBadge('b-reading', 'Capturing...');
+  setStat('idle', 'Select the form tab in the screen share dialog...');
 
   let stream;
   try {
     stream = await navigator.mediaDevices.getDisplayMedia({
-      video: { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 1 } },
-      audio: false
+      video:{ width:{ideal:1920}, height:{ideal:1080}, frameRate:{ideal:1} }, audio:false
     });
-  } catch (e) {
-    btn.disabled = false;
-    setBadge('idle', 'Not shared');
+  } catch(e) {
+    sbtn.disabled = false;
+    setBadge('b-idle', 'Try again');
     setStat('idle', 'Screen share cancelled — try again');
     return;
   }
 
-  // Capture one frame
   setStat('idle', 'Capturing frame...');
   const video = document.createElement('video');
-  video.srcObject = stream;
-  video.muted = true;
+  video.srcObject = stream; video.muted = true;
   await new Promise(r => { video.onloadedmetadata = r; setTimeout(r, 2500); });
-  await video.play().catch(() => {});
+  await video.play().catch(()=>{});
   await delay(700);
 
   const canvas = document.createElement('canvas');
   canvas.width = video.videoWidth || 1280;
   canvas.height = video.videoHeight || 720;
   canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-  stream.getTracks().forEach(t => t.stop());
-  video.srcObject = null;
+  stream.getTracks().forEach(t => t.stop()); video.srcObject = null;
 
-  capturedB64 = canvas.toDataURL('image/jpeg', 0.82).split(',')[1];
+  capturedB64 = canvas.toDataURL('image/jpeg', 0.85).split(',')[1];
 
   // Show screenshot
   const img = document.getElementById('prev-img');
   img.src = 'data:image/jpeg;base64,' + capturedB64;
   img.classList.add('show');
   document.getElementById('prev-idle').style.display = 'none';
-  screenShared = true;
-  btn.disabled = false;
-  btn.classList.add('active-share');
-  btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="width:14px;height:14px"><polyline points="20 6 9 17 4 12"/></svg> Screen shared — reshare`;
+  sbtn.disabled = false;
+  setBadge('b-live', 'Captured');
 
-  // Analyze with Claude Vision (if key available)
+  // Analyze with Vision
   if (useAI && capturedB64) {
     await analyzeWithVision(capturedB64);
   } else {
     activeFields = DEFAULT_FIELDS;
-    showFieldChips(activeFields);
-    setBadge('live', 'Ready');
+    showChips(activeFields);
+    setBadge('b-live', `${activeFields.length} fields`);
     setStat('idle', `${activeFields.length} fields ready — press Start`);
     document.getElementById('startbtn').disabled = false;
   }
 }
 
+// ── Claude Vision ─────────────────────────────────────────────────────────────
 async function analyzeWithVision(b64) {
-  showAnalysisOverlay(true, 'Detecting form fields...');
-  setBadge('analyzing', 'Analyzing...');
-  setStat('idle', 'Claude Vision reading your form...');
+  showAnl(true, 'Detecting form fields...');
+  setStat('idle', 'Claude Vision reading the form...');
 
   try {
     const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), 40000);
+    setTimeout(() => ctrl.abort(), 40000);
+    setAnlStep('Sending screenshot to Claude...');
 
-    setAoStep('Sending screenshot to Claude Vision...');
     const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      signal: ctrl.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-iab': 'true',
+      method:'POST', signal:ctrl.signal,
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-iab':'true',
       },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        system: `You are an expert at reading Indian government web portal forms from screenshots.
-Return ONLY valid JSON — no markdown fences, no explanation.
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:2000,
+        system:`You are analyzing an Indian government web form screenshot.
+Return ONLY valid JSON — no markdown, no explanation.
 
 For each visible form field return:
-- label: field label (translate Hindi to English)
+- label: field label in English (translate Hindi if needed)
 - type: text|number|date|dropdown|radio|checkbox|file_upload|otp|captcha|submit_button|unknown
 - isRequired: boolean
 - needsSkip: true ONLY for otp, captcha, file_upload, submit_button
-- expl: For technical/unfamiliar fields (IFSC, Aadhaar, PAN, Taluka, survey number, BPL, CIN etc.) write 1-2 clear sentences explaining what it is and where to find it. For obvious fields (name, dob, gender, mobile, email, address, district, state, pincode, income, occupation) set to null.
-- ask: Short natural voice prompt to ask the user for this value.
+- expl: For technical/unfamiliar fields (IFSC, Aadhaar, Taluka, BPL, caste category, survey number etc) write 1-2 simple sentences explaining what it is and where to find it. For obvious fields (name, dob, gender, mobile, address, pincode) set null.
+- ask: Short natural voice prompt to ask the citizen for this value.
+- formFieldId: Your best guess at the HTML field ID — use these known IDs if you recognise the field: f-name, f-fname, f-mname, f-dob, f-gender, f-marital, f-aadhaar, f-mobile, f-email, f-caste, f-house, f-building, f-locality, f-taluka, f-district, f-state, f-pin, f-income, f-occ, f-rctype, f-bank, f-ifsc, f-acc. Otherwise set null.
 
-Return: {"formType": string, "fields": [{label, type, isRequired, needsSkip, expl, ask}]}`,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: b64 }},
-            { type: 'text',  text: 'Analyze this government form and return the JSON.' }
+Return: {"formType": string, "fields": [{label, type, isRequired, needsSkip, expl, ask, formFieldId}]}`,
+        messages:[{
+          role:'user',
+          content:[
+            { type:'image', source:{ type:'base64', media_type:'image/jpeg', data:b64 }},
+            { type:'text',  text:'Analyze this government form screenshot and return the JSON.' }
           ]
         }]
       })
     });
-    clearTimeout(timer);
 
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-
-    setAoStep('Parsing field data...');
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    setAnlStep('Parsing fields...');
     const data = await res.json();
     const block = data.content?.find(b => b.type === 'text');
-    if (!block) throw new Error('empty response');
-
+    if (!block) throw new Error('empty');
     const raw = block.text.replace(/^```json\s*/i,'').replace(/```\s*$/i,'').trim();
     const parsed = JSON.parse(raw);
 
-    activeFields = (parsed.fields || []).filter(f => !f.needsSkip);
-    showAnalysisOverlay(false);
-    showFieldChips(activeFields);
-    setBadge('live', `${activeFields.length} fields`);
+    // Enrich with known field IDs
+    activeFields = (parsed.fields||[]).filter(f=>!f.needsSkip).map(f => {
+      const mapKey = f.label.toLowerCase().trim();
+      const mapped = FIELD_MAP[mapKey];
+      return {
+        id: f.formFieldId || mapped?.id || null,
+        label: f.label,
+        expl: f.expl,
+        ask: f.ask,
+      };
+    }).filter(f => f.id); // only fields we can target
+
+    showAnl(false);
+    showChips(activeFields);
+    setBadge('b-live', `${activeFields.length} fields`);
     setStat('idle', `Claude detected ${activeFields.length} fields — press Start`);
     document.getElementById('startbtn').disabled = false;
 
-  } catch (e) {
-    // Graceful fallback — don't crash, just use default fields
-    console.warn('Vision analysis failed, using default fields:', e.message);
-    setAoStep('Using embedded form definition...');
-    await delay(800);
-    showAnalysisOverlay(false);
+  } catch(e) {
+    console.warn('Vision failed, using defaults:', e.message);
+    setAnlStep('Using default field list...');
+    await delay(600);
+    showAnl(false);
     activeFields = DEFAULT_FIELDS;
-    showFieldChips(activeFields);
-    setBadge('live', `${activeFields.length} fields`);
-    const isKey = e.message.includes('401') ? 'Invalid API key. ' : '';
-    setStat('idle', `${isKey}${activeFields.length} fields ready — press Start`);
+    showChips(activeFields);
+    setBadge('b-live', `${activeFields.length} fields`);
+    setStat('idle', (e.message.includes('401')?'Invalid API key. ':'')+`${activeFields.length} fields ready — press Start`);
     document.getElementById('startbtn').disabled = false;
   }
+}
+
+// ── Send fill command to form tab ─────────────────────────────────────────────
+function fillFormField(fieldId, label, value) {
+  if (!formTab || formTab.closed) return;
+  formTab.postMessage({ type:'FORM_FILL', action:'fill', fieldId, label, value }, '*');
+}
+function highlightFormField(fieldId) {
+  if (!formTab || formTab.closed) return;
+  formTab.postMessage({ type:'FORM_FILL', action:'highlight', fieldId }, '*');
+}
+function clearFormHighlights() {
+  if (!formTab || formTab.closed) return;
+  formTab.postMessage({ type:'FORM_FILL', action:'clear_highlight' }, '*');
 }
 
 // ── TTS ───────────────────────────────────────────────────────────────────────
@@ -512,297 +557,234 @@ function loadVoices() {
   });
 }
 function pickVoice(voices) {
-  preferredVoice =
-    voices.find(v => v.lang === 'en-IN') ||
-    voices.find(v => v.lang === 'en-GB') ||
-    voices.find(v => v.lang === 'en-AU') ||
-    voices.find(v => v.lang.startsWith('en') && !v.localService) ||
-    voices.find(v => v.lang.startsWith('en')) || null;
+  preferredVoice = voices.find(v=>v.lang==='en-IN')||voices.find(v=>v.lang==='en-GB')||
+    voices.find(v=>v.lang==='en-AU')||voices.find(v=>v.lang.startsWith('en')&&!v.localService)||
+    voices.find(v=>v.lang.startsWith('en'))||null;
 }
 function speak(text) {
   return new Promise(resolve => {
     if (!window.speechSynthesis) { resolve(); return; }
-    window.speechSynthesis.cancel();
-    setWave(true);
+    window.speechSynthesis.cancel(); setWave(true);
     const utt = new SpeechSynthesisUtterance(text);
     if (preferredVoice) utt.voice = preferredVoice;
-    utt.lang = 'en-IN'; utt.rate = 0.87; utt.pitch = 1.05; utt.volume = 1.0;
-    let done = false;
-    const finish = () => { if (done) return; done = true; setWave(false); resolve(); };
-    const hb = setInterval(() => {
-      if (!running || done) { clearInterval(hb); return; }
-      window.speechSynthesis.pause(); window.speechSynthesis.resume();
-    }, 12000);
-    utt.onend = () => { clearInterval(hb); finish(); };
-    utt.onerror = () => { clearInterval(hb); finish(); };
+    utt.lang='en-IN'; utt.rate=0.87; utt.pitch=1.05; utt.volume=1.0;
+    let done=false;
+    const finish=()=>{ if(done)return; done=true; setWave(false); resolve(); };
+    const hb=setInterval(()=>{ if(!running||done){clearInterval(hb);return;} window.speechSynthesis.pause(); window.speechSynthesis.resume(); },12000);
+    utt.onend=()=>{ clearInterval(hb); finish(); };
+    utt.onerror=()=>{ clearInterval(hb); finish(); };
     window.speechSynthesis.speak(utt);
   });
 }
 
 // ── STT ───────────────────────────────────────────────────────────────────────
-const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
 const hasSR = !!SR;
 
 function listenVoice() {
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve,reject) => {
     if (!hasSR) { reject(new Error('no-sr')); return; }
-    setMic('listening'); setTranscript('Listening...', false);
-    const rec = new SR();
-    rec.lang = 'en-IN'; rec.continuous = false; rec.interimResults = true; rec.maxAlternatives = 1;
-    let final = '', ended = false;
-    rec.onresult = e => {
-      const r = e.results[e.results.length - 1], t = r[0].transcript;
-      if (r.isFinal) { final = t.trim(); setTranscript(t, false); }
-      else setTranscript(t, true);
-    };
-    rec.onend = () => { if (ended) return; ended = true; setMic('idle'); final ? resolve(final) : reject(new Error('no-speech')); };
-    rec.onerror = e => { if (ended) return; ended = true; setMic('idle'); reject(new Error(e.error)); };
+    setMic('listening'); setTranscript('Listening...',false);
+    const rec=new SR(); rec.lang='en-IN'; rec.continuous=false; rec.interimResults=true; rec.maxAlternatives=1;
+    let final='',ended=false;
+    rec.onresult=e=>{ const r=e.results[e.results.length-1],t=r[0].transcript; if(r.isFinal){final=t.trim();setTranscript(t,false);}else setTranscript(t,true); };
+    rec.onend=()=>{ if(ended)return; ended=true; setMic('idle'); final?resolve(final):reject(new Error('no-speech')); };
+    rec.onerror=e=>{ if(ended)return; ended=true; setMic('idle'); reject(new Error(e.error)); };
     rec.start();
   });
 }
 function listenText() {
   return new Promise(resolve => {
-    const fb = document.getElementById('txtfb');
-    fb.classList.add('show');
-    const inp = document.getElementById('tfin');
-    inp.value = ''; inp.focus();
-    textResolve = val => { fb.classList.remove('show'); setTranscript(val, false); resolve(val); };
+    const fb=document.getElementById('txtfb'); fb.classList.add('show');
+    const inp=document.getElementById('tfin'); inp.value=''; inp.focus();
+    textResolve=val=>{ fb.classList.remove('show'); setTranscript(val,false); resolve(val); };
   });
 }
 function typeSubmit() {
-  const v = document.getElementById('tfin').value.trim();
-  if (!v || !textResolve) return;
-  textResolve(v); textResolve = null;
+  const v=document.getElementById('tfin').value.trim();
+  if(!v||!textResolve)return; textResolve(v); textResolve=null;
 }
 async function getInput() {
-  if (hasSR) {
-    try { return await listenVoice(); }
-    catch (e) {
-      if (e.message === 'no-speech') return null;
-      return listenText();
-    }
-  }
+  if(hasSR){ try{return await listenVoice();}catch(e){ if(e.message==='no-speech')return null; return listenText(); } }
   return listenText();
 }
 
-// ── Claude value parsing ──────────────────────────────────────────────────────
+// ── Value parsing ─────────────────────────────────────────────────────────────
 async function parseValue(fieldLabel, raw) {
-  if (!useAI || !KEY) return raw;
+  if (!useAI||!KEY) return raw;
   try {
-    const ctrl = new AbortController();
-    setTimeout(() => ctrl.abort(), 10000);
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST', signal: ctrl.signal,
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-iab': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 80,
-        messages: [{ role: 'user', content:
-          `Form field: "${fieldLabel}". User said: "${raw}".
-Extract only the clean value to enter in this field. Return just the value, nothing else.
+    const ctrl=new AbortController(); setTimeout(()=>ctrl.abort(),10000);
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',signal:ctrl.signal,
+      headers:{'Content-Type':'application/json','x-api-key':KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-iab':'true'},
+      body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:80,messages:[{role:'user',content:
+        `Form field: "${fieldLabel}". User said: "${raw}".
+Extract only the clean value for this field. Return just the value, nothing else.
 If user said skip/don't have/no, return exactly: SKIP
-Examples: "twelve april eighty five" → "12/04/1985" | "S B I N zero zero zero one two three four" → "SBIN0001234" | "I am male" → "Male"` }]
-      })
+Examples: "twelve april eighty five" → "12/04/1985" | "S B I N zero zero one two three four" → "SBIN0001234" | "I am male" → "Male" | "four lakhs twenty thousand" → "420000"`
+      }]})
     });
-    if (!res.ok) return raw;
-    const d = await res.json();
-    return d.content?.[0]?.text?.trim() || raw;
+    if(!res.ok)return raw;
+    const d=await res.json();
+    return d.content?.[0]?.text?.trim()||raw;
   } catch { return raw; }
-}
-
-// ── Form fill (fills the embedded form on the left) ───────────────────────────
-// Also fills any REAL form in the captured screen visually (shows in log)
-function fillFormField(label, value) {
-  const lc = label.toLowerCase();
-  const all = document.querySelectorAll('input[data-key], select[data-key]');
-  document.querySelectorAll('.finp').forEach(e => e.classList.remove('factive'));
-  let best = null, bestScore = 0;
-  for (const el of all) {
-    const dk = el.dataset.key?.toLowerCase() || '';
-    const dl = el.closest('.frow')?.querySelector('label')?.textContent?.toLowerCase().replace(/[^a-z\s]/g,'').trim() || '';
-    let score = 0;
-    if (dl === lc || dk === lc) score = 100;
-    else if (lc.includes(dk) || dk.includes(lc) || lc.includes(dl) || dl.includes(lc)) score = 70;
-    if (score > bestScore) { bestScore = score; best = el; }
-  }
-  if (best && bestScore > 0) {
-    if (best.tagName === 'SELECT') {
-      const opts = Array.from(best.options);
-      const m = opts.find(o => o.text.toLowerCase().includes(value.toLowerCase()) || value.toLowerCase().includes(o.text.toLowerCase()));
-      best.value = m ? m.value : value;
-    } else { best.value = value; }
-    best.classList.add('filled');
-    best.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-}
-function highlightChip(label) {
-  document.querySelectorAll('.chip').forEach(c => {
-    const active = c.textContent.toLowerCase().includes(label.toLowerCase().slice(0,10));
-    c.classList.toggle('active', active);
-    c.classList.remove('filled');
-  });
-}
-function markChipDone(label) {
-  document.querySelectorAll('.chip').forEach(c => {
-    if (c.textContent.toLowerCase().includes(label.toLowerCase().slice(0,10))) {
-      c.classList.remove('active'); c.classList.add('filled');
-    }
-  });
 }
 
 // ── Main session ──────────────────────────────────────────────────────────────
 async function startSession() {
-  if (running || !activeFields.length) return;
-  running = true;
-  document.getElementById('startbtn').disabled = true;
-  document.getElementById('stopbtn').disabled = false;
-  document.getElementById('log').innerHTML = '';
-  document.querySelectorAll('input[data-key], select[data-key]').forEach(e => { e.value = ''; e.classList.remove('filled', 'factive'); });
+  if (running||!activeFields.length) return;
+  running=true;
+  document.getElementById('startbtn').disabled=true;
+  document.getElementById('stopbtn').disabled=false;
+  document.getElementById('log').innerHTML='';
 
   await loadVoices();
+  const total=activeFields.length; let filled=0;
 
-  const total = activeFields.length;
-  let filled = 0;
+  setStat('speaking','Starting...');
+  await speak('Hello! I can see the government form. I will guide you through each field. For any field that might be confusing, I will explain what it means before asking. Let us begin.');
 
-  setStat('speaking', 'Starting...');
-  await speak('Hello! I have read your government form. I will now guide you through each field. For any field that might be confusing, I will explain what it means and where to find the information. Let us begin.');
-
-  for (let i = 0; i < activeFields.length; i++) {
+  for (let i=0; i<activeFields.length; i++) {
     if (!running) break;
-    const f = activeFields[i];
-    highlightChip(f.label);
-    showField(f);
-    setStat('speaking', `Asking: ${f.label}`, `${filled}/${total}`);
+    const f=activeFields[i];
 
-    const speech = f.expl
-      ? `${f.label}. ${f.expl} ${f.ask || 'Please tell me your ' + f.label + '.'}`
-      : (f.ask || `Please tell me your ${f.label}.`);
+    showCurField(f);
+    if (f.id) highlightFormField(f.id);
+    setChipActive(f.label);
+    setStat('speaking',`Asking: ${f.label}`,`${filled}/${total}`);
+
+    const speech = f.expl ? `${f.label}. ${f.expl} ${f.ask}` : (f.ask||`Please tell me your ${f.label}.`);
     await speak(speech);
     if (!running) break;
 
-    setStat('listening', `Listening for: ${f.label}`, `${filled}/${total}`);
+    setStat('listening',`Listening for: ${f.label}`,`${filled}/${total}`);
     setMic('listening');
 
-    let raw = null, tries = 0;
-    while (tries < 2 && raw === null && running) {
+    let raw=null, tries=0;
+    while (tries<2&&raw===null&&running) {
       try {
-        raw = await getInput();
-        if (!raw?.trim()) { raw = null; throw new Error('empty'); }
+        raw=await getInput();
+        if(!raw?.trim()){raw=null;throw new Error('empty');}
       } catch {
         tries++;
-        if (tries < 2 && running) await speak(`I didn't catch that. Please say your ${f.label} again.`);
+        if(tries<2&&running) await speak(`I didn't catch that. Please say your ${f.label} again.`);
       }
     }
-
     if (!running) break;
+
     if (!raw) {
-      await speak(`Skipping ${f.label}. You can fill it manually.`);
-      addLog('s', f.label, null); markChipDone(f.label); continue;
+      await speak(`Skipping ${f.label}. You can fill it manually on the form.`);
+      addLog('s',f.label,null); setChipDone(f.label,'skip'); continue;
     }
 
-    setStat('filling', `Filling: ${f.label}`, `${filled}/${total}`);
-    const parsed = await parseValue(f.label, raw);
+    setStat('filling',`Filling: ${f.label}`,`${filled}/${total}`);
+    const parsed=await parseValue(f.label,raw);
 
-    if (parsed === 'SKIP') {
+    if (parsed==='SKIP') {
       await speak(`Understood, skipping ${f.label}.`);
-      addLog('s', f.label, null); markChipDone(f.label); continue;
+      addLog('s',f.label,null); setChipDone(f.label,'skip'); continue;
     }
 
-    const short = parsed.length > 26 ? parsed.slice(0,26)+'...' : parsed;
-    await speak(`Got it. ${short}. Filling now.`);
-    fillFormField(f.label, parsed);
-    markChipDone(f.label);
+    const short=parsed.length>26?parsed.slice(0,26)+'...':parsed;
+    await speak(`Got it — ${short}. Filling now.`);
+
+    // Fill the REAL form in the other tab
+    if (f.id) fillFormField(f.id, f.label, parsed);
     filled++;
-    addLog('f', f.label, parsed);
-    setStat('done', `Filled: ${f.label}`, `${filled}/${total}`);
-    await delay(380);
+    addLog('f',f.label,parsed);
+    setChipDone(f.label,'fill');
+    setStat('done',`Filled: ${f.label}`,`${filled}/${total}`);
+    await delay(400);
   }
 
   if (running) {
-    hideField();
-    setStat('done', `Session complete — ${filled} of ${total} fields filled`);
+    clearFormHighlights();
+    hideCurField();
+    setStat('done',`Complete — ${filled} of ${total} fields filled`);
     setMic('idle');
-    await speak(`All done. I have filled ${filled} out of ${total} fields. Please review the form carefully. When you are ready, press Submit on the government website yourself. I have not touched the Submit button.`);
+    await speak(`All done. I have filled ${filled} out of ${total} fields in the form. Please switch to the form tab, review everything carefully, then press Submit yourself. I have not touched the Submit button.`);
   }
 
-  running = false;
-  document.getElementById('startbtn').disabled = false;
-  document.getElementById('stopbtn').disabled = true;
-  hideField(); setMic('idle');
+  running=false;
+  document.getElementById('startbtn').disabled=false;
+  document.getElementById('stopbtn').disabled=true;
+  hideCurField(); setMic('idle');
 }
 
 function stopSession() {
-  running = false;
+  running=false;
   window.speechSynthesis.cancel();
-  if (textResolve) { textResolve('skip'); textResolve = null; }
+  if(textResolve){textResolve('skip');textResolve=null;}
   document.getElementById('txtfb').classList.remove('show');
-  setStat('idle', 'Stopped');
-  setMic('idle'); setWave(false); hideField();
-  document.getElementById('startbtn').disabled = !screenShared && !activeFields.length;
-  document.getElementById('stopbtn').disabled = true;
+  clearFormHighlights();
+  setStat('idle','Stopped'); setMic('idle'); setWave(false); hideCurField();
+  document.getElementById('startbtn').disabled=false;
+  document.getElementById('stopbtn').disabled=true;
 }
 
 // ── UI helpers ────────────────────────────────────────────────────────────────
-function setStat(state, text, prog = '') {
-  document.getElementById('sdot').className = 'sdot ' + state;
-  document.getElementById('stext').textContent = text;
-  document.getElementById('sprog').textContent = prog;
+function setStat(state,text,prog=''){
+  document.getElementById('sdot').className='sdot '+state;
+  document.getElementById('stext').textContent=text;
+  document.getElementById('sprog').textContent=prog;
 }
-function setBadge(state, text) {
-  const b = document.getElementById('screen-badge');
-  b.className = 'lph-badge badge-' + state;
-  b.textContent = text;
+function setBadge(cls,text){
+  const b=document.getElementById('lbadge');
+  b.className='lbadge '+cls; b.textContent=text;
 }
-function showAnalysisOverlay(show, step='') {
-  document.getElementById('analysis-overlay').classList.toggle('show', show);
-  if (step) document.getElementById('ao-step').textContent = '→ ' + step;
+function showAnl(show,step=''){
+  document.getElementById('anl').classList.toggle('show',show);
+  if(step)setAnlStep(step);
 }
-function setAoStep(text) { document.getElementById('ao-step').textContent = '→ ' + text; }
-function showFieldChips(fields) {
-  const wrap = document.getElementById('field-chips');
-  wrap.innerHTML = fields.map(f => `<span class="chip">${f.label}</span>`).join('');
-  wrap.classList.add('show');
+function setAnlStep(t){ document.getElementById('anl-step').textContent='→ '+t; }
+function showChips(fields){
+  const w=document.getElementById('chips');
+  w.innerHTML=fields.map(f=>`<span class="chip" data-lbl="${f.label}">${f.label}</span>`).join('');
+  w.classList.add('show');
 }
-function showField(f) {
-  document.getElementById('cf-name').textContent = f.label;
-  document.getElementById('cf-expl').textContent = f.expl || '';
+function setChipActive(label){
+  document.querySelectorAll('.chip').forEach(c=>{
+    c.classList.toggle('act', c.dataset.lbl===label);
+  });
+}
+function setChipDone(label,type){
+  document.querySelectorAll('.chip').forEach(c=>{
+    if(c.dataset.lbl===label){ c.classList.remove('act'); if(type==='fill')c.classList.add('done'); }
+  });
+}
+function showCurField(f){
+  document.getElementById('cf-name').textContent=f.label;
+  document.getElementById('cf-expl').textContent=f.expl||'';
   document.getElementById('curfield').classList.add('show');
 }
-function hideField() { document.getElementById('curfield').classList.remove('show'); }
-function setMic(state) {
-  document.getElementById('micbtn').className = 'micbtn ' + (state === 'idle' ? 'off' : state);
-  document.getElementById('mr1').classList.toggle('p', state === 'listening');
-  document.getElementById('mr2').classList.toggle('p2', state === 'listening');
-  if (state === 'idle') setTranscript('', true);
+function hideCurField(){ document.getElementById('curfield').classList.remove('show'); }
+function setMic(state){
+  document.getElementById('micbtn').className='micbtn '+(state==='idle'?'off':state);
+  document.getElementById('mr1').classList.toggle('p',state==='listening');
+  document.getElementById('mr2').classList.toggle('p2',state==='listening');
+  if(state==='idle')setTranscript('',true);
 }
-function setWave(on) { document.querySelectorAll('.wb').forEach(b => b.classList.toggle('on', on)); }
-function setTranscript(text, muted) {
-  const el = document.getElementById('transcript');
-  el.textContent = text || (muted ? 'Waiting...' : '');
-  el.className = 'transcript' + (muted ? ' muted' : '');
+function setWave(on){ document.querySelectorAll('.wb').forEach(b=>b.classList.toggle('on',on)); }
+function setTranscript(text,muted){
+  const el=document.getElementById('transcript');
+  el.textContent=text||(muted?'Waiting...':'');
+  el.className='transcript'+(muted?' muted':'');
 }
-function addLog(type, label, val) {
-  const log = document.getElementById('log');
-  const item = document.createElement('div');
-  item.className = 'li';
-  const disp = val ? maskVal(label, val) : '—';
-  const badge = type === 'f' ? '<span class="lbadge lbf">filled</span>' : '<span class="lbadge lbs">skipped</span>';
-  item.innerHTML = `<div class="ldot ${type}"></div><div class="llbl">${label}</div><div class="lval">${disp}</div>${badge}`;
-  log.appendChild(item);
-  log.scrollTop = log.scrollHeight;
+function addLog(type,label,val){
+  const log=document.getElementById('log');
+  const item=document.createElement('div'); item.className='li';
+  const disp=val?maskVal(label,val):'—';
+  const badge=type==='f'?'<span class="lbf">filled</span>':'<span class="lbs">skipped</span>';
+  item.innerHTML=`<div class="ldot ${type}"></div><div class="llbl">${label}</div><div class="lval">${disp}</div>${badge}`;
+  log.appendChild(item); log.scrollTop=log.scrollHeight;
 }
-function maskVal(label, val) {
-  const l = label.toLowerCase();
-  if (l.includes('aadhaar') || l.includes('aadhar')) return 'XXXX XXXX ' + String(val).replace(/\s/g,'').slice(-4);
-  if (l.includes('account')) return 'XXXX' + String(val).slice(-4);
+function maskVal(label,val){
+  const l=label.toLowerCase();
+  if(l.includes('aadhaar'))return 'XXXX XXXX '+String(val).replace(/\s/g,'').slice(-4);
+  if(l.includes('account'))return 'XXXX'+String(val).slice(-4);
   return String(val);
 }
-function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
 </script>
 </body>
 </html>
