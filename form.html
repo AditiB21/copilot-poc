@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Maharashtra Ration Card Application — mahafood.gov.in</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans',sans-serif;background:#eef0f7;color:#222;min-height:100vh}
+
+/* ── GOV TOP BAR ── */
+.gov-ribbon{height:6px;background:linear-gradient(90deg,#f93,#f93 33%,#fff 33%,#fff 66%,#128807 66%)}
+.gov-header{background:#fff;border-bottom:2px solid #e8ecf4;padding:0}
+.header-inner{max-width:1100px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:16px}
+.emblem-wrap{display:flex;align-items:center;gap:12px}
+.emblem-circle{width:60px;height:60px;background:#f5a623;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#7a4200;flex-shrink:0;border:2px solid #d4881a}
+.gov-titles{flex:1}
+.gov-title-hi{font-size:13px;color:#1a3d7c;font-weight:600}
+.gov-title-en{font-size:16px;color:#1a3d7c;font-weight:700}
+.gov-title-dept{font-size:11px;color:#555}
+.header-right{text-align:right;font-size:11px;color:#666}
+.header-right a{color:#1a3d7c;text-decoration:none;font-weight:600}
+
+/* ── NAV BAR ── */
+.navbar{background:#1a3d7c;padding:0 20px}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;gap:0}
+.nav-item{padding:10px 16px;font-size:12px;color:rgba(255,255,255,.8);cursor:pointer;border-right:1px solid rgba(255,255,255,.15);white-space:nowrap}
+.nav-item:hover{background:rgba(255,255,255,.1);color:#fff}
+.nav-item.active{background:#f5a623;color:#fff;font-weight:600}
+
+/* ── BREADCRUMB ── */
+.breadcrumb{background:#f0f2f8;border-bottom:1px solid #d8dcec;padding:8px 20px}
+.bc-inner{max-width:1100px;margin:0 auto;font-size:11px;color:#666}
+.bc-inner a{color:#1a3d7c;text-decoration:none}.bc-inner a:hover{text-decoration:underline}
+
+/* ── MAIN ── */
+.main{max-width:1100px;margin:20px auto;padding:0 20px}
+.page-title-bar{background:#1a3d7c;color:#fff;padding:14px 20px;border-radius:6px 6px 0 0;display:flex;align-items:center;gap:10px}
+.page-title-bar h1{font-size:16px;font-weight:600}
+.form-card{background:#fff;border:1px solid #d8dcec;border-top:none;border-radius:0 0 6px 6px;padding:0}
+
+/* ── SECTION HEADER ── */
+.sec-header{background:#e8ecf4;padding:8px 20px;border-bottom:1px solid #d8dcec;border-top:1px solid #d8dcec;display:flex;align-items:center;gap:8px}
+.sec-num{width:22px;height:22px;background:#1a3d7c;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.sec-title{font-size:13px;font-weight:600;color:#1a3d7c}
+
+/* ── FORM GRID ── */
+.form-grid{padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:0 24px}
+.form-grid.three{grid-template-columns:1fr 1fr 1fr}
+.form-grid.full{grid-template-columns:1fr}
+.field-group{margin-bottom:14px}
+.field-group.full-width{grid-column:1/-1}
+.field-label{font-size:11.5px;color:#333;font-weight:600;margin-bottom:4px;display:flex;align-items:center;gap:3px}
+.req{color:#c0392b;font-size:13px;line-height:1}
+.field-input{width:100%;height:34px;border:1px solid #b8bece;border-radius:3px;padding:0 10px;font-size:12.5px;font-family:'Noto Sans',sans-serif;color:#222;background:#fafbfd;outline:none;transition:all .3s}
+.field-input:focus{border-color:#4a7cf7;background:#eef2ff;box-shadow:0 0 0 3px rgba(74,124,247,.08)}
+.field-input.active-field{border-color:#7c6ff7!important;border-width:2px!important;background:#f0effe!important;animation:fpulse 1.5s ease-in-out infinite}
+.field-input.filled{border-color:#27ae60!important;background:#eafaf1!important;color:#1a6e3a!important;font-weight:500}
+select.field-input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%23555' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-color:#fafbfd;padding-right:28px}
+select.field-input.filled{background-color:#eafaf1!important}
+@keyframes fpulse{0%,100%{box-shadow:0 0 0 0 rgba(124,111,247,0)}50%{box-shadow:0 0 0 4px rgba(124,111,247,.18)}}
+.field-note{font-size:10.5px;color:#888;margin-top:3px}
+
+/* ── DECLARATION ── */
+.decl-box{margin:0 20px 16px;background:#fffde7;border:1px solid #f9a825;border-radius:4px;padding:12px 16px}
+.decl-box p{font-size:11.5px;color:#444;line-height:1.7}
+.decl-check{display:flex;align-items:flex-start;gap:8px;margin-top:8px}
+.decl-check input{margin-top:2px;flex-shrink:0}
+.decl-check label{font-size:11.5px;color:#333;line-height:1.6}
+
+/* ── SUBMIT ROW ── */
+.submit-row{padding:16px 20px;background:#f5f7fb;border-top:1px solid #d8dcec;display:flex;align-items:center;gap:12px;border-radius:0 0 6px 6px}
+.btn-submit{padding:10px 28px;background:#1a3d7c;color:#fff;border:none;border-radius:3px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans',sans-serif}
+.btn-submit:hover{background:#15336a}
+.btn-reset{padding:10px 20px;background:#fff;color:#555;border:1px solid #b8bece;border-radius:3px;font-size:13px;cursor:pointer;font-family:'Noto Sans',sans-serif}
+.btn-reset:hover{background:#f5f5f5}
+.submit-note{font-size:11px;color:#888;flex:1;text-align:right}
+
+/* ── FILL TOAST ── */
+.fill-toast{position:fixed;bottom:24px;right:24px;background:#1a6e3a;color:#fff;padding:12px 18px;border-radius:8px;font-size:13px;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.2);display:none;z-index:999;max-width:320px;line-height:1.5}
+.fill-toast.show{display:block;animation:toastin .3s ease}
+@keyframes toastin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── FOOTER ── */
+.gov-footer{background:#1a3d7c;color:rgba(255,255,255,.7);text-align:center;padding:16px;font-size:11px;margin-top:32px}
+.gov-footer a{color:rgba(255,255,255,.85);text-decoration:none}
+</style>
+</head>
+<body>
+
+<div class="gov-ribbon"></div>
+
+<div class="gov-header">
+  <div class="header-inner">
+    <div class="emblem-wrap">
+      <div class="emblem-circle">GOI</div>
+      <div class="gov-titles">
+        <div class="gov-title-hi">महाराष्ट्र शासन</div>
+        <div class="gov-title-en">Government of Maharashtra</div>
+        <div class="gov-title-dept">Food, Civil Supplies &amp; Consumer Protection Department</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div style="margin-bottom:3px">mahafood.gov.in</div>
+      <a href="#">Marathi</a> &nbsp;|&nbsp; <a href="#">English</a>
+    </div>
+  </div>
+</div>
+
+<div class="navbar">
+  <div class="nav-inner">
+    <div class="nav-item">Home</div>
+    <div class="nav-item active">Ration Card</div>
+    <div class="nav-item">Check Status</div>
+    <div class="nav-item">Download</div>
+    <div class="nav-item">Grievances</div>
+    <div class="nav-item">Contact Us</div>
+  </div>
+</div>
+
+<div class="breadcrumb">
+  <div class="bc-inner">
+    <a href="#">Home</a> &rsaquo; <a href="#">Ration Card</a> &rsaquo; New Application
+  </div>
+</div>
+
+<div class="main">
+  <div class="page-title-bar">
+    <div style="width:20px;height:20px;background:#f5a623;border-radius:50%;flex-shrink:0"></div>
+    <h1>New Ration Card Application Form</h1>
+  </div>
+
+  <div class="form-card">
+
+    <!-- Section 1: Personal Details -->
+    <div class="sec-header">
+      <div class="sec-num">1</div>
+      <div class="sec-title">Personal Details of Head of Household</div>
+    </div>
+    <div class="form-grid">
+      <div class="field-group">
+        <div class="field-label">Full Name (as per Aadhaar) <span class="req">*</span></div>
+        <input class="field-input" id="f-name" data-label="full name" type="text" placeholder="Enter full name"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Father's / Husband's Name <span class="req">*</span></div>
+        <input class="field-input" id="f-fname" data-label="father name" type="text" placeholder=""/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Mother's Name</div>
+        <input class="field-input" id="f-mname" data-label="mother name" type="text" placeholder=""/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Date of Birth <span class="req">*</span></div>
+        <input class="field-input" id="f-dob" data-label="date of birth" type="text" placeholder="DD/MM/YYYY"/>
+        <div class="field-note">As per Aadhaar card</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Gender <span class="req">*</span></div>
+        <select class="field-input" id="f-gender" data-label="gender">
+          <option value="">-- Select --</option>
+          <option>Male</option><option>Female</option><option>Transgender</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Marital Status</div>
+        <select class="field-input" id="f-marital" data-label="marital status">
+          <option value="">-- Select --</option>
+          <option>Single</option><option>Married</option><option>Widowed</option><option>Divorced</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section 2: Identity -->
+    <div class="sec-header">
+      <div class="sec-num">2</div>
+      <div class="sec-title">Identity &amp; Contact Information</div>
+    </div>
+    <div class="form-grid">
+      <div class="field-group">
+        <div class="field-label">Aadhaar Number <span class="req">*</span></div>
+        <input class="field-input" id="f-aadhaar" data-label="aadhaar number" type="text" placeholder="XXXX XXXX XXXX" maxlength="14"/>
+        <div class="field-note">12-digit unique identification number</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Mobile Number (Aadhaar linked) <span class="req">*</span></div>
+        <input class="field-input" id="f-mobile" data-label="mobile number" type="text" placeholder="10-digit mobile number" maxlength="10"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Email Address</div>
+        <input class="field-input" id="f-email" data-label="email" type="text" placeholder=""/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Caste Category <span class="req">*</span></div>
+        <select class="field-input" id="f-caste" data-label="caste category">
+          <option value="">-- Select --</option>
+          <option>General</option><option>OBC</option><option>SC</option><option>ST</option><option>NT-A</option><option>NT-B</option><option>NT-C</option><option>NT-D</option><option>SBC</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Section 3: Address -->
+    <div class="sec-header">
+      <div class="sec-num">3</div>
+      <div class="sec-title">Residential Address</div>
+    </div>
+    <div class="form-grid">
+      <div class="field-group">
+        <div class="field-label">House / Flat / Room No. <span class="req">*</span></div>
+        <input class="field-input" id="f-house" data-label="house number" type="text" placeholder=""/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Building / Society Name</div>
+        <input class="field-input" id="f-building" data-label="building name" type="text" placeholder=""/>
+      </div>
+      <div class="field-group full-width">
+        <div class="field-label">Street / Road / Locality</div>
+        <input class="field-input" id="f-locality" data-label="locality" type="text" placeholder=""/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Taluka / Tehsil <span class="req">*</span></div>
+        <input class="field-input" id="f-taluka" data-label="taluka" type="text" placeholder=""/>
+        <div class="field-note">Administrative subdivision of district</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">District <span class="req">*</span></div>
+        <input class="field-input" id="f-district" data-label="district" type="text" placeholder=""/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">State <span class="req">*</span></div>
+        <select class="field-input" id="f-state" data-label="state">
+          <option value="">-- Select --</option>
+          <option>Maharashtra</option><option>Gujarat</option><option>Karnataka</option>
+          <option>Goa</option><option>Madhya Pradesh</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">PIN Code <span class="req">*</span></div>
+        <input class="field-input" id="f-pin" data-label="pincode" type="text" placeholder="6-digit PIN code" maxlength="6"/>
+      </div>
+    </div>
+
+    <!-- Section 4: Income & Bank -->
+    <div class="sec-header">
+      <div class="sec-num">4</div>
+      <div class="sec-title">Income &amp; Bank Details</div>
+    </div>
+    <div class="form-grid">
+      <div class="field-group">
+        <div class="field-label">Annual Household Income (₹) <span class="req">*</span></div>
+        <input class="field-input" id="f-income" data-label="annual income" type="text" placeholder="In Indian Rupees"/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Occupation / Source of Income</div>
+        <input class="field-input" id="f-occ" data-label="occupation" type="text" placeholder=""/>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Ration Card Type <span class="req">*</span></div>
+        <select class="field-input" id="f-rctype" data-label="ration card type">
+          <option value="">-- Select --</option>
+          <option>APL (Above Poverty Line)</option>
+          <option>BPL (Below Poverty Line)</option>
+          <option>Antyodaya Anna Yojana (AAY)</option>
+          <option>Priority Household (PHH)</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Bank Name</div>
+        <input class="field-input" id="f-bank" data-label="bank name" type="text" placeholder=""/>
+        <div class="field-note">For DBT subsidy transfer</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">IFSC Code</div>
+        <input class="field-input" id="f-ifsc" data-label="ifsc code" type="text" placeholder="e.g. SBIN0001234" maxlength="11"/>
+        <div class="field-note">Found on cheque book / passbook</div>
+      </div>
+      <div class="field-group">
+        <div class="field-label">Bank Account Number</div>
+        <input class="field-input" id="f-acc" data-label="account number" type="text" placeholder=""/>
+      </div>
+    </div>
+
+    <!-- Declaration -->
+    <div class="decl-box">
+      <p>I hereby declare that the information furnished above is true and correct to the best of my knowledge and belief. I understand that if any information is found to be false or incorrect, my application is liable to be rejected and action may be taken against me as per the applicable laws.</p>
+      <div class="decl-check">
+        <input type="checkbox" id="decl-check"/>
+        <label for="decl-check">I have read and agree to the above declaration. I confirm that all the information provided is accurate.</label>
+      </div>
+    </div>
+
+    <!-- Submit row -->
+    <div class="submit-row">
+      <button class="btn-submit" onclick="handleSubmit()">Submit Application</button>
+      <button class="btn-reset" onclick="resetForm()">Reset</button>
+      <span class="submit-note">Please review all fields before submitting</span>
+    </div>
+
+  </div>
+</div>
+
+<div class="gov-footer">
+  Site designed, developed and hosted by NIC &nbsp;|&nbsp;
+  <a href="#">Terms &amp; Conditions</a> &nbsp;|&nbsp;
+  <a href="#">Privacy Policy</a> &nbsp;|&nbsp;
+  Last updated: March 2025
+</div>
+
+<div class="fill-toast" id="toast"></div>
+
+<script>
+// ── Receive fill commands from the AI assistant ──────────────────────────────
+window.addEventListener('message', function(e) {
+  const d = e.data;
+  if (!d || d.type !== 'FORM_FILL') return;
+
+  if (d.action === 'highlight') {
+    highlightField(d.fieldId);
+  } else if (d.action === 'fill') {
+    fillField(d.fieldId, d.value);
+    showToast('Filled: ' + d.label + '\n' + maskVal(d.label, d.value));
+  } else if (d.action === 'clear_highlight') {
+    clearHighlights();
+  }
+});
+
+// Tell the opener we're ready
+window.addEventListener('load', function() {
+  if (window.opener) {
+    window.opener.postMessage({ type: 'FORM_READY' }, '*');
+  }
+});
+
+function highlightField(id) {
+  clearHighlights();
+  const el = document.getElementById(id);
+  if (el) {
+    el.classList.add('active-field');
+    el.scrollIntoView({ behavior:'smooth', block:'center' });
+  }
+}
+
+function fillField(id, value) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('active-field');
+  if (el.tagName === 'SELECT') {
+    const opts = Array.from(el.options);
+    const m = opts.find(o =>
+      o.text.toLowerCase().includes(value.toLowerCase()) ||
+      value.toLowerCase().includes(o.text.toLowerCase().split('(')[0].trim())
+    );
+    if (m) el.value = m.value; else el.value = value;
+  } else {
+    // Animate typing
+    el.value = '';
+    const chars = value.split('');
+    let i = 0;
+    const iv = setInterval(() => {
+      if (i >= chars.length) { clearInterval(iv); el.classList.add('filled'); return; }
+      el.value += chars[i++];
+    }, 30);
+  }
+  el.classList.add('filled');
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.active-field').forEach(e => e.classList.remove('active-field'));
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+function maskVal(label, val) {
+  const l = label.toLowerCase();
+  if (l.includes('aadhaar')) return 'XXXX XXXX ' + String(val).replace(/\s/g,'').slice(-4);
+  if (l.includes('account')) return 'XXXX' + String(val).slice(-4);
+  return val;
+}
+
+function handleSubmit() {
+  const checked = document.getElementById('decl-check').checked;
+  if (!checked) { alert('Please read and accept the declaration before submitting.'); return; }
+  alert('This is a demo form. In the real application, this button submits to the government portal.\n\nThe AI assistant never presses Submit — only you can do that.');
+}
+
+function resetForm() {
+  document.querySelectorAll('.field-input').forEach(el => {
+    el.value = '';
+    el.classList.remove('filled','active-field');
+  });
+  document.getElementById('decl-check').checked = false;
+}
+</script>
+</body>
+</html>
